@@ -1,12 +1,10 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {Context} from "../../index";
 import {fetchVikis} from "../../http/VikiAPI";
 import {useHistory} from "react-router-dom";
 
 const Vikis = () => {
     const history = useHistory();
     const [vikis, setVikis] = useState([])
-
 
     useEffect(() => {
         fetchVikis().then(r => {
@@ -21,8 +19,7 @@ const Vikis = () => {
             setVikis(r)
         })
     }, [])
-    const {user} = useContext(Context);
-    console.log('user: ', user);
+
 
     return (
         <div className="flex justify-center font-montserrat font-normal py-10">

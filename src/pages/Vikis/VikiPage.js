@@ -1,5 +1,4 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {Context} from "../../index";
 import moment from "moment";
 import {useHistory, useParams, useLocation} from "react-router-dom";
 import {deleteVikis, getOneViki} from "../../http/VikiAPI";
@@ -9,13 +8,11 @@ import ReactTooltip from "react-tooltip";
 const VikiPage = () => {
 
     const {id} = useParams()
-    const {user} = useContext(Context);
 
     const history = useHistory();
     const location = useLocation();
 
     const [viki, setViki] = useState()
-    console.log('user: ', user);
 
     const getViki = async (id) => {
         return await getOneViki(id)

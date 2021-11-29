@@ -4,19 +4,19 @@ import {Dialog} from "@headlessui/react";
 import {useForm} from "react-hook-form";
 
 import { changePassword } from "../../http/userAPI";
-import {Context} from "../../index";
+import {useAuth} from "../../contexts/FirebaseAuthContext";
 import {LOGIN_ROUTE} from "../../utils/consts";
 import {useHistory} from "react-router-dom";
 
 const UpdatePasswordForm = observer(({openForm}) => {
 
-    const {user} = useContext(Context);
+    const {userStore} = useAuth();
     const history = useHistory();
     const {register, handleSubmit, formState: { errors }, setValue, getValues} = useForm();
 
     const changeOldPassword = async ({oldPassword, newPassword}) => {
         try {
-            await changePassword(user.user.id, oldPassword, newPassword)
+            await changePassword(userStore.user.uid, oldPassword, newPassword)
             openForm(false)
             history.push(LOGIN_ROUTE)
         }

@@ -3,13 +3,10 @@ import { Dialog, Transition, Disclosure } from '@headlessui/react'
 import { ChevronUpIcon } from '@heroicons/react/solid'
 import Plot from '../../node_modules/react-plotly.js/react-plotly';
 import axios from 'axios';
-import {Context} from "../index";
 import SongsTable from "./Tables/SongsTable";
 import AudioParamTable from "./Tables/AudioParamTable";
 
 const Statistics = () => {
-
-    const {user} = useContext(Context);
 
     const artistQRef = useRef(null);
     const audioQRef = useRef(null);

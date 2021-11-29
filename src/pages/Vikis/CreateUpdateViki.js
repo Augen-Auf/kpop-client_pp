@@ -3,7 +3,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import {useForm} from "react-hook-form";
 import moment from "moment";
-import {Context} from "../../index";
+import { useAuth } from "../../contexts/FirebaseAuthContext";
 import {observer} from "mobx-react-lite";
 import {useHistory, useLocation, useParams} from "react-router-dom";
 import {createVikis, getOneImage, getOneViki, updateVikis} from "../../http/VikiAPI";
@@ -13,7 +13,7 @@ import Image from "next/image";
 const CreateUpdateViki = observer(() => {
 
     let { id } = useParams();
-    const {user} = useContext(Context);
+    const { userStore } = useAuth();
     const location = useLocation();
     const history = useHistory();
     const isUpdate = location.pathname.split('/').includes('update')
@@ -94,7 +94,7 @@ const CreateUpdateViki = observer(() => {
         formData.append('short_description', shortDescription)
         formData.append('birthday', birthday)
         formData.append('info', artistInfo)
-        formData.append('author_id', user.user.id)
+        formData.append('author_id', userStore.user.uid)
         formData.append('image', image)
         if(isUpdate) {
             const newsData  = await updateVikis(id, formData);

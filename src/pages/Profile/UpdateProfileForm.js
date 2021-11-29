@@ -2,20 +2,20 @@ import React, {useContext, useEffect, useState} from 'react';
 import {Dialog} from "@headlessui/react";
 import {EMAIL_REGEX} from "../../utils/consts";
 import {useForm} from "react-hook-form";
-import {Context} from "../../index";
+import { useAuth } from "../../contexts/FirebaseAuthContext";
 import {observer} from "mobx-react-lite";
 import {getAvatar, updateUser} from "../../http/userAPI";
 
 const UpdateProfileForm = observer(({openForm}) => {
 
-    const {user} = useContext(Context);
-    const [avatar, setAvatar] = useState(user.user.avatarId ? process.env.REACT_APP_API_URL + 'api/avatar/' + user.user.avatarId : null)
+    const {userStore} = useAuth();
+    const [avatar, setAvatar] = useState(userStore.user.photoUrl)
     const [avatarAction, setAvatarAction] = useState(null)
 
     const {register, handleSubmit, formState: { errors }, setValue} = useForm({
         defaultValues: {
-            name: user.user.name,
-            email: user.user.email
+            name: userStore.user.displayName,
+            email: userStore.user.email
         }
     });
 
@@ -31,14 +31,14 @@ const UpdateProfileForm = observer(({openForm}) => {
     }
 
     const changeUserData = async ({name, email, avatarImage}) => {
-        const userData = await updateUser(user.user.id, name, email, avatarImage, avatarAction)
-        user.setUser(userData);
+        const userData = await updateUser(userStore.user.uid, name, email, avatarImage, avatarAction)
+        userStore.setUser(userData);
         openForm(false)
     }
 
     const close = () => {
-        setValue('name', user.user.name);
-        setValue('email', user.user.email);
+        setValue('name', userStore.user.displayName);
+        setValue('email', userStore.user.email);
         openForm(false)
     }
 

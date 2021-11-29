@@ -1,5 +1,5 @@
 import React, { Fragment, useContext, useState, useEffect } from 'react';
-import {Context} from "../../index";
+import {useAuth} from "../../contexts/FirebaseAuthContext";
 import { Dialog, Transition, Listbox } from '@headlessui/react'
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid'
 import {observer} from "mobx-react-lite";
@@ -12,7 +12,7 @@ import {getComments, getNews, getVikis} from "../../http/userAPI";
 
 const Profile = observer(() => {
 
-    const {user} = useContext(Context);
+    const {userStore} = useAuth();
 
     const [isOpen, setIsOpen] = useState(false)
     const [dialogForm, setDialogForm] = useState()
@@ -33,23 +33,23 @@ const Profile = observer(() => {
     }
 
     useEffect(() => {
-        getUserNews(user.user.id).then(r => {
+        getUserNews(userStore.user.uid).then(r => {
             console.log(r)
             setUserNews(r && r.length > 0  ? r.length : 0)
         });
-        getUserVikis(user.user.id).then(r => {
+        getUserVikis(userStore.user.uid).then(r => {
             console.log('articles', r)
             setUserVikis(r && r.length > 0 ? r.length : 0)
         })
-        getUserComments(user.user.id).then(r => {
+        getUserComments(userStore.user.uid).then(r => {
             setUserComments(r && r.length > 0  ? r.length : 0)
         })
     }, [])
 
     const sections = [
-        {title: 'Новости', section: 'news', component: <UserNews userId={user.user.id}/>},
-        {title: 'Вики', section: 'vikis', component: <UserVikis userId={user.user.id}/>},
-        {title: 'Комментарии', section: 'comments', component: <UserComments userId={user.user.id}/> }
+        {title: 'Новости', section: 'news', component: <UserNews userId={userStore.user.uid}/>},
+        {title: 'Вики', section: 'vikis', component: <UserVikis userId={userStore.user.uid}/>},
+        {title: 'Комментарии', section: 'comments', component: <UserComments userId={userStore.user.uid}/> }
     ]
 
     const dialogs = {
@@ -73,13 +73,13 @@ const Profile = observer(() => {
                             <div className="bg-yellow rounded-md shadow-md ">
                                 <div className="flex flex-col px-3 py-4 space-y-5 text-black">
                                     <div className="rounded-full lg:w-48 lg:h-48 w-32 h-32 mx-auto bg-pink">
-                                        {user.user.avatarId &&
-                                        <img src={ user.user.avatarId ? process.env.REACT_APP_API_URL + 'api/avatar/' + user.user.avatarId : 'img/Sunmi.jpg' } className="object-cover h-full w-full rounded-full"/>
-                                        }
+                                        {/*{user.user.avatarId &&*/}
+                                        {/*<img src={ user.user.avatarId ? process.env.REACT_APP_API_URL + 'api/avatar/' + user.user.avatarId : 'img/Sunmi.jpg' } className="object-cover h-full w-full rounded-full"/>*/}
+                                        {/*}*/}
                                     </div>
                                     <div>
-                                        <p className="text-center text-2xl font-semibold">{user.user.name}</p>
-                                        <p className="text-center text-md">{user.user.email}</p>
+                                        <p className="text-center text-2xl font-semibold">{userStore.user.displayName}</p>
+                                        <p className="text-center text-md">{userStore.user.email}</p>
                                     </div>
                                     <div className="flex justify-center space-x-4 bg-orange-200 rounded-md py-2">
                                         <div className="flex flex-col justify-center items-center">

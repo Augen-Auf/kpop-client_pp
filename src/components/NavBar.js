@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {Context} from "../index";
+import { useAuth } from "../contexts/FirebaseAuthContext";
 import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
@@ -25,7 +25,7 @@ function classNames(...classes) {
 
 const NavBar = observer(() => {
 
-    const {user} = useContext(Context);
+    const { userStore } = useAuth();
     const location = useLocation();
     const [avatar,setAvatar] = useState()
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -42,8 +42,8 @@ const NavBar = observer(() => {
     const currentSectionTitle = routesList.find( item => location.pathname === item.path)?.name
 
     const logOut = () => {
-        user.setUser({});
-        user.setIsAuth(false);
+        userStore.setUser({});
+        userStore.setIsAuth(false);
         localStorage.removeItem('token')
     };
 
@@ -93,9 +93,9 @@ const NavBar = observer(() => {
                                             <div>
                                                 <Menu.Button className="max-w-xs bg-gray-800 rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
                                                     <div className="rounded-full h-8 w-8 bg-pink">
-                                                        {user.user.avatarId &&
-                                                        <img src={process.env.REACT_APP_API_URL + 'api/avatar/' + user.user.avatarId} className="object-cover rounded-full w-full h-full" alt=""/>
-                                                        }
+                                                        {/*{userStore.user.avatarId &&*/}
+                                                        {/*<img src={process.env.REACT_APP_API_URL + 'api/avatar/' + user.user.avatarId} className="object-cover rounded-full w-full h-full" alt=""/>*/}
+                                                        {/*}*/}
                                                     </div>
                                                 </Menu.Button>
                                             </div>
@@ -114,7 +114,7 @@ const NavBar = observer(() => {
                                                     className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
                                                 >
                                                     {
-                                                        user.isAuth ?
+                                                        userStore.isAuth ?
                                                             profile.map((item, itIdx) => (
                                                                 <Menu.Item key={'main_' + itIdx}>
                                                                     {({ active }) => (

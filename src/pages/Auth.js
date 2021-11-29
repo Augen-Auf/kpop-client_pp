@@ -2,46 +2,44 @@ import React, {useContext, useState} from 'react';
 import { NavLink, useLocation, useHistory  } from "react-router-dom"
 import {useForm} from "react-hook-form";
 import {observer} from "mobx-react-lite";
+import {useAuth} from "../contexts/FirebaseAuthContext";
 // import * as yup from 'yup'
 
 
 import {EMAIL_REGEX, LOGIN_ROUTE, NEWS_ROUTE, PORTAL_ROUTE, REGISTRATION_ROUTE} from "../utils/consts";
 import {login, registration} from "../http/userAPI";
-import {Context} from "../index";
 
 const Auth = observer(() => {
 
-    const { user } = useContext(Context);
+    const { userStore } = useAuth();
     const [authError, setAuthError] = useState(null);
 
     const location = useLocation();
     const history = useHistory();
     const isLogin = location.pathname === LOGIN_ROUTE;
     const {register, handleSubmit, formState: { errors }} = useForm();
-
+    const { signUpWithGoogle, signIn, signUp } = useAuth()
 
 
     const onSubmit = async (data) => {
+        setAuthError(null)
+
         try {
-            setAuthError(null)
-
-            let user_data;
+            console.log('start',authError)
             if (isLogin) {
-                user_data = await login(data.email, data.password).catch(err => { throw err })
+                await signIn(data.email, data.password).catch(err => { throw err })
             } else {
-                user_data = await registration(data.email, data.password, data.name).catch(err => { throw err })
+                await signUp(data.email, data.name, data.password).catch(err => { throw err })
             }
-
-            console.log(user_data);
+            console.log(authError)
             if(authError === null) {
-                user.setUser(user_data);
-                user.setIsAuth(true);
                 history.push(NEWS_ROUTE)
             }
         }
         catch (e) {
+            console.log('error')
             setAuthError(e.message);
-        }
+         }
     };
 
     return (
@@ -99,17 +97,17 @@ const Auth = observer(() => {
                     </p>
                 }
             </div>
-            {/*<div className="bg-yellow rounded-md px-2 py-1 flex justify-center items-center space-x-2">*/}
-            {/*    <div className="inline-block">*/}
-            {/*        <svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google"*/}
-            {/*             className="svg-inline--fa fa-google fa-w-16 text-pink h-10 w-90" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">*/}
-            {/*            <path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"/>*/}
-            {/*        </svg>*/}
-            {/*    </div>*/}
-            {/*    <div className="inline-block">*/}
-            {/*        <p>Зарегистрироваться через Google</p>*/}
-            {/*    </div>*/}
-            {/*</div>*/}
+            <div className="bg-yellow rounded-md px-2 py-1 flex justify-center items-center space-x-2"  onClick={() => signUpWithGoogle()}>
+                <div className="inline-block">
+                    <svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google"
+                         className="svg-inline--fa fa-google fa-w-16 text-pink h-10 w-90" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
+                        <path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"/>
+                    </svg>
+                </div>
+                <div className="inline-block">
+                    <p>Зарегистрироваться через Google</p>
+                </div>
+            </div>
             </div>
                 {authError ? (<div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-5" role="alert">
                        <strong className="font-bold">Ошибка! </strong>

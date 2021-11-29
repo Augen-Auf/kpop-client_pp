@@ -2,12 +2,9 @@ import React, {useContext, useEffect, useRef, useState, Fragment} from 'react';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import axios from 'axios';
 import { Dialog, Transition } from '@headlessui/react'
-import {Context} from "../index";
 import {observer} from "mobx-react-lite";
 
 const Music = observer(() => {
-
-    const {user} = useContext(Context);
 
     const [token, setToken] = useState();
     const [newReleases, setNewReleases] = useState([]);

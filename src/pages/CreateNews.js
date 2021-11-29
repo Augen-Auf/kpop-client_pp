@@ -4,7 +4,7 @@ import 'react-quill/dist/quill.snow.css';
 
 import Tag from '../components/Tag'
 import {useForm} from "react-hook-form";
-import {Context} from "../index";
+import { useAuth } from "../contexts/FirebaseAuthContext";
 import {observer} from "mobx-react-lite";
 import {createNews, getOneNew, updateNews} from "../http/NewsAPI";
 import {useHistory, useLocation, useParams} from "react-router-dom";
@@ -14,7 +14,7 @@ import {PROFILE_ROUTE} from "../utils/consts";
 const CreateNews = observer(() => {
 
     let { id } = useParams();
-    const {user} = useContext(Context);
+    const { userStore } = useAuth();
     const location = useLocation();
     const history = useHistory();
     const isUpdate = location.pathname.split('/').includes('update')
@@ -101,7 +101,7 @@ const CreateNews = observer(() => {
         formData.append('lid', lid)
         formData.append('text', text)
         formData.append('type', 'news')
-        formData.append('author_id', user.user.id)
+        formData.append('author_id', userStore.user.uid)
         if (tags.length > 0)
             formData.append('tags', tags.join(','))
         formData.append('image', image)

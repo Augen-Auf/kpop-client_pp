@@ -4,7 +4,7 @@ import {getOneNew} from "../http/NewsAPI";
 import moment from "moment";
 import 'moment/locale/ru'
 import {observer} from "mobx-react-lite";
-import {Context} from "../index";
+import { useAuth } from "../contexts/FirebaseAuthContext";
 import Comments from "../components/Comments";
 import NewsReactions from "../components/NewsReactions";
 import {CopyToClipboard} from 'react-copy-to-clipboard';
@@ -15,7 +15,7 @@ const NewsPage = observer(() => {
     let { id } = useParams();
     const location = useLocation();
 
-    const {user} = useContext(Context);
+    const { userStore } = useAuth();
 
     const [newsObj, setNewsObj] = useState();
     const [loadedImages, setLoadedImages] = useState([]);
@@ -101,9 +101,9 @@ const NewsPage = observer(() => {
                     </div>
 
                     {/*Эмодзи*/}
-                    {user.user.id &&
+                    {userStore.user.uid &&
                     <div className="flex justify-center">
-                        <NewsReactions userId={user.user.id} newsId={id}/>
+                        <NewsReactions userId={userStore.user.uid} newsId={id}/>
                     </div>
                     }
                     {/*Комментарии*/}

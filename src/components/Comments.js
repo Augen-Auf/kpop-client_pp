@@ -2,13 +2,13 @@ import React, {useContext, useEffect, useState, Fragment} from 'react';
 import CommentInput from "./CommentInput";
 import {getNewsComments} from "../http/CommentAPI";
 import {observer} from "mobx-react-lite";
-import {Context} from "../index";
+import { useAuth } from "../contexts/FirebaseAuthContext";
 import SingleComment from "./SingleComment";
 import ReplyComment from "./ReplyComment";
 
 const Comments = observer(({newsId}) => {
 
-    const {user} = useContext(Context);
+    const { userStore } = useAuth();
 
     const [comments, setComments] = useState([]);
 
@@ -30,7 +30,7 @@ const Comments = observer(({newsId}) => {
         <div className="space-y-3">
             <p className="text-xl font-semibold">{ comments.length } Комментариев</p>
 
-            { user.user.id && <CommentInput newsId={newsId} parentId={null} authorId={user.user.id} updateCommentsList={updateCommentsList}/> }
+            { userStore.user.uid && <CommentInput newsId={newsId} parentId={null} authorId={ userStore.user.uid } updateCommentsList={updateCommentsList}/> }
 
             { comments &&
                 <div className="space-y-4">
@@ -38,8 +38,8 @@ const Comments = observer(({newsId}) => {
                         comments.filter(item => item.parent_id === null).map(item =>
                             <div className="p-4 bg-yellow">
                                 <Fragment>
-                                    <SingleComment comment={item} newsId={newsId} authorId={user.user.id} updateCommentsList={updateCommentsList} />
-                                    <ReplyComment comments={comments} newsId={newsId} parentId={item.id} authorId={user.user.id} updateCommentsList={updateCommentsList} />
+                                    <SingleComment comment={item} newsId={newsId} authorId={ userStore.user.uid } updateCommentsList={updateCommentsList} />
+                                    <ReplyComment comments={comments} newsId={newsId} parentId={item.id} authorId={userStore.user.id} updateCommentsList={updateCommentsList} />
                                 </Fragment>
                             </div>
                         )
