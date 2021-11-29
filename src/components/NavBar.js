@@ -18,6 +18,7 @@ import {
 import {observer} from "mobx-react-lite";
 import {Link, useLocation} from "react-router-dom";
 import {publicRoutes, authRoutes} from "../routes";
+import Search from "./Search";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
@@ -42,7 +43,8 @@ const NavBar = observer(() => {
     const currentSectionTitle = routesList.find( item => location.pathname === item.path)?.name
 
     const logOut = () => {
-        userStore.setUser({});
+        userStore.setDbUser({});
+        userStore.setFirebaseUser({});
         userStore.setIsAuth(false);
         localStorage.removeItem('token')
     };
@@ -68,13 +70,14 @@ const NavBar = observer(() => {
                                 )}
                             </button>
                         </div>
-                        <div className="flex-shrink-0 md:w-2/12 w-4/12">
+
+                        <div className="flex-shrink-0 md:w-2/12 w-7/12 flex justify-center">
                             <img
-                                className="h-12 w-90"
+                                className="h-12 w-90 md:ml-0 ml-12"
                                 src="img/Logo.svg"/>
                         </div>
                         <div className="hidden md:block w-8/12">
-                            <div className="flex items-baseline justify-end">
+                            <div className="flex items-center justify-end">
                             {navigation.map((item, itemIdx) =>
                                 <Fragment key={'menu-item_' + itemIdx}>
                                     <Link to={item.link} className={`text-black bg-blue-dark ${location.pathname === item.link ? 'bg-pink':'hover:bg-pink'} px-5 py-5 text-sm font-medium`}>
@@ -84,15 +87,24 @@ const NavBar = observer(() => {
                             )}
                             </div>
                         </div>
-                        <div className="w-1/12 flex justify-start">
-                            <div className="flex items-center md:ml-6">
+                        <div className="w-3/12 flex md:justify-around justify-between md:ml-10">
+                            <Fragment>
+                                <label htmlFor="my-modal-3" className="modal-button rounded-full bg-pink cursor-pointer text-black bg-blue-dark ">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 px-2 py-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </label>
+                                <input type="checkbox" id="my-modal-3" className="modal-toggle"/>
+                                <Search modalLabel="my-modal-3"/>
+                            </Fragment>
+                            <div className="flex items-center">
                                 {/* Profile dropdown */}
                                 <Menu as="div" className="relative">
                                     {({ open }) => (
                                         <>
                                             <div>
                                                 <Menu.Button className="max-w-xs bg-gray-800 rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
-                                                    <div className="rounded-full h-8 w-8 bg-pink">
+                                                    <div className="rounded-full h-10 w-10 bg-pink">
                                                         {/*{userStore.user.avatarId &&*/}
                                                         {/*<img src={process.env.REACT_APP_API_URL + 'api/avatar/' + user.user.avatarId} className="object-cover rounded-full w-full h-full" alt=""/>*/}
                                                         {/*}*/}
@@ -168,43 +180,6 @@ const NavBar = observer(() => {
                                 </a>
                             )}
                         </div>
-                        {/*<div className="pt-4 pb-3 border-t border-black">*/}
-                        {/*    <div className="flex items-center px-5">*/}
-                        {/*        <div className="flex-shrink-0">*/}
-                        {/*            <img*/}
-                        {/*                className="h-10 w-10 rounded-full"*/}
-                        {/*                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"*/}
-                        {/*                alt=""*/}
-                        {/*            />*/}
-                        {/*        </div>*/}
-                        {/*        <div className="ml-3">*/}
-                        {/*            <div className="text-base font-medium leading-none text-white">Tom Cook</div>*/}
-                        {/*            <div className="text-sm font-medium leading-none text-gray-400">tom@example.com</div>*/}
-                        {/*        </div>*/}
-                        {/*    </div>*/}
-                        {/*    <div className="mt-3 px-2 space-y-1">*/}
-                        {/*        {user.isAuth ?*/}
-                        {/*            profile.map((item, itemIdx) => (*/}
-                        {/*                <a*/}
-                        {/*                    key={'mobile_' + itemIdx}*/}
-                        {/*                    href="/kpopworld"*/}
-                        {/*                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"*/}
-                        {/*                >*/}
-                        {/*                    {item}*/}
-                        {/*                </a>*/}
-                        {/*            )) :*/}
-                        {/*            unauth_profile.map((item, itemIdx) => (*/}
-                        {/*                <a*/}
-                        {/*                    key={'mobile_' + itemIdx}*/}
-                        {/*                    href="#"*/}
-                        {/*                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"*/}
-                        {/*                >*/}
-                        {/*                    {item}*/}
-                        {/*                </a>*/}
-                        {/*            ))*/}
-                        {/*        }*/}
-                        {/*    </div>*/}
-                        {/*</div>*/}
                     </div> }
                 </div>
             </>

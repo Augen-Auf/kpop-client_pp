@@ -16,7 +16,7 @@ const UpdatePasswordForm = observer(({openForm}) => {
 
     const changeOldPassword = async ({oldPassword, newPassword}) => {
         try {
-            await changePassword(userStore.user.uid, oldPassword, newPassword)
+            await changePassword(userStore.firebaseUser.uid, oldPassword, newPassword)
             openForm(false)
             history.push(LOGIN_ROUTE)
         }

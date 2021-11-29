@@ -53,25 +53,25 @@ export const getAvatar = async (id) => {
 }
 
 export const getNews = async (id) => {
-    const { data } = await $authHost.post(`api/user/news`, {userId: id})
+    const { data } = await $authHost.post(`api/user/news`, {id: id})
     console.log(data)
     return data
 }
 
 export const getComments = async (id) => {
-    const { data } = await $authHost.post(`api/user/comments`, {userId: id})
+    const { data } = await $authHost.post(`api/user/comments`, {id: id})
     console.log(data)
     return data
 }
 
 export const getArticles = async (id) => {
-    const { data } = await $authHost.post(`api/user/articles`, {userId: id})
+    const { data } = await $authHost.post(`api/user/articles`, {id: id})
     console.log(data)
     return data
 }
 
 export const getVikis = async (id) => {
-    const { data } = await $authHost.post(`api/user/vikis`, {userId: id})
+    const { data } = await $authHost.post(`api/user/vikis`, {id: id})
     console.log(data)
     return data
 }

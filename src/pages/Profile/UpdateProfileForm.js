@@ -9,13 +9,13 @@ import {getAvatar, updateUser} from "../../http/userAPI";
 const UpdateProfileForm = observer(({openForm}) => {
 
     const {userStore} = useAuth();
-    const [avatar, setAvatar] = useState(userStore.user.photoUrl)
+    const [avatar, setAvatar] = useState(userStore.dbUser.photoUrl)
     const [avatarAction, setAvatarAction] = useState(null)
 
     const {register, handleSubmit, formState: { errors }, setValue} = useForm({
         defaultValues: {
-            name: userStore.user.displayName,
-            email: userStore.user.email
+            name: userStore.dbUser.nickname,
+            email: userStore.firebaseUser.email
         }
     });
 
@@ -31,14 +31,14 @@ const UpdateProfileForm = observer(({openForm}) => {
     }
 
     const changeUserData = async ({name, email, avatarImage}) => {
-        const userData = await updateUser(userStore.user.uid, name, email, avatarImage, avatarAction)
-        userStore.setUser(userData);
+        const userData = await updateUser(userStore.dbUser.id, name, email, avatarImage, avatarAction)
+        userStore.setDbUser(userData);
         openForm(false)
     }
 
     const close = () => {
-        setValue('name', userStore.user.displayName);
-        setValue('email', userStore.user.email);
+        setValue('name', userStore.dbUser.nickname);
+        setValue('email', userStore.firebaseUser.email);
         openForm(false)
     }
 

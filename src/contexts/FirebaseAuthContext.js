@@ -18,14 +18,17 @@ export function FirebaseAuthContextProvider({ children }) {
     const userStore = new UserStore()
 
     useEffect( () => {
-        auth.onAuthStateChanged((unsubscribe) => {
+        auth.onAuthStateChanged(async (unsubscribe) => {
             if(unsubscribe) {
                 console.log(unsubscribe)
                 unsubscribe.getIdToken().then((token) => {
                     localStorage.setItem("token", token)
                 })
 
-                userStore.setUser(unsubscribe)
+                const dbUser = await getUser(unsubscribe.uid)
+
+                userStore.setFirebaseUser(unsubscribe)
+                userStore.setDbUser(dbUser)
                 userStore.setIsAuth(true)
             }
         })
@@ -39,13 +42,14 @@ export function FirebaseAuthContextProvider({ children }) {
                     displayName: nickname,
                 })
 
-                await createUser(userCredentials.user.uid,  nickname)
+                const dbUser = await createUser(userCredentials.user.uid,  nickname)
 
                 userCredentials.user.getIdToken().then((token) => {
                     localStorage.setItem("token", token)
                 })
 
-                userStore.setUser(user)
+                userStore.setFirebaseUser(user)
+                userStore.setDbUser(dbUser)
                 userStore.setIsAuth(true)
             }
         })
@@ -56,35 +60,40 @@ export function FirebaseAuthContextProvider({ children }) {
             if(userCredentials) {
                 console.log(userCredentials)
                 let user = userCredentials.user
-                const dbUser = await getUser(userCredentials.user.uid)
-                if (dbUser) {
+                console.log(user)
+                let dbUser = await getUser(userCredentials.user.uid)
+                console.log(dbUser)
+                if (!dbUser) {
                     user = await updateProfile(user, {
                         displayName: userCredentials.user.email.split('@')[0],
                     })
 
-                    await createUser(userCredentials.user.uid, userCredentials.user.email.split('@')[0])
+                    dbUser = await createUser(userCredentials.user.uid, userCredentials.user.email.split('@')[0])
                 }
 
                 userCredentials.user.getIdToken().then((token) => {
                     localStorage.setItem("token", token)
                 })
 
-                userStore.setUser(user)
+                userStore.setFirebaseUser(user)
+                userStore.setDbUser(dbUser)
                 userStore.setIsAuth(true)
             }
         })
     }
 
     async function signIn(email, password) {
-        await signInWithEmailAndPassword(auth, email, password).then((userCredentials) => {
+        await signInWithEmailAndPassword(auth, email, password).then(async (userCredentials) => {
             if(userCredentials) {
                 console.log(userCredentials)
 
                 userCredentials.user.getIdToken().then((token) => {
                     localStorage.setItem("token", token)
                 })
+                const dbUser = await getUser(userCredentials.user.uid)
 
-                userStore.setUser(userCredentials.user)
+                userStore.setFirebaseUser(userCredentials.user)
+                userStore.setDbUser(dbUser)
                 userStore.setIsAuth(true)
             }
         })

@@ -30,7 +30,7 @@ const Comments = observer(({newsId}) => {
         <div className="space-y-3">
             <p className="text-xl font-semibold">{ comments.length } Комментариев</p>
 
-            { userStore.user.uid && <CommentInput newsId={newsId} parentId={null} authorId={ userStore.user.uid } updateCommentsList={updateCommentsList}/> }
+            { userStore.dbUser.id && <CommentInput newsId={newsId} parentId={null} authorId={ userStore.dbUser.id } updateCommentsList={updateCommentsList}/> }
 
             { comments &&
                 <div className="space-y-4">
@@ -38,8 +38,8 @@ const Comments = observer(({newsId}) => {
                         comments.filter(item => item.parent_id === null).map(item =>
                             <div className="p-4 bg-yellow">
                                 <Fragment>
-                                    <SingleComment comment={item} newsId={newsId} authorId={ userStore.user.uid } updateCommentsList={updateCommentsList} />
-                                    <ReplyComment comments={comments} newsId={newsId} parentId={item.id} authorId={userStore.user.id} updateCommentsList={updateCommentsList} />
+                                    <SingleComment comment={item} newsId={newsId} authorId={ userStore.dbUser.id } updateCommentsList={updateCommentsList} />
+                                    <ReplyComment comments={comments} newsId={newsId} parentId={item.id} authorId={userStore.dbUser.id} updateCommentsList={updateCommentsList} />
                                 </Fragment>
                             </div>
                         )

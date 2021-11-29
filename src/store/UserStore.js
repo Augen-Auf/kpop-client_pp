@@ -3,7 +3,8 @@ import {makeAutoObservable} from "mobx";
 export default class UserStore {
     constructor() {
         this._isAuth = false;
-        this._user = {};
+        this._firebaseUser = {};
+        this._dbUser = {};
         makeAutoObservable(this)
     }
 
@@ -11,8 +12,12 @@ export default class UserStore {
         this._isAuth = bool
     }
 
-    setUser(user) {
-        this._user = user
+    setFirebaseUser(user) {
+        this._firebaseUser = user
+    }
+
+    setDbUser(user) {
+        this._dbUser = user
     }
 
 
@@ -20,7 +25,11 @@ export default class UserStore {
         return this._isAuth
     }
 
-    get user() {
-        return this._user
+    get firebaseUser() {
+        return this._firebaseUser
+    }
+
+    get dbUser() {
+        return this._dbUser
     }
 }

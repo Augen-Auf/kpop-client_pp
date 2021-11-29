@@ -20,36 +20,36 @@ const Profile = observer(() => {
     const [userNews, setUserNews] = useState(0)
     const [userVikis, setUserVikis] = useState(0)
 
-    const getUserNews = async (id) => {
-        return await getNews(id)
+    const getUserNews = async (uid) => {
+        return await getNews(uid)
     }
 
-    const getUserComments = async (id) => {
-        return await getComments(id)
+    const getUserComments = async (uid) => {
+        return await getComments(uid)
     }
 
-    const getUserVikis = async (id) => {
-        return await getVikis(id)
+    const getUserVikis = async (uid) => {
+        return await getVikis(uid)
     }
 
     useEffect(() => {
-        getUserNews(userStore.user.uid).then(r => {
+        getUserNews(userStore.dbUser.id).then(r => {
             console.log(r)
             setUserNews(r && r.length > 0  ? r.length : 0)
         });
-        getUserVikis(userStore.user.uid).then(r => {
+        getUserVikis(userStore.dbUser.id).then(r => {
             console.log('articles', r)
             setUserVikis(r && r.length > 0 ? r.length : 0)
         })
-        getUserComments(userStore.user.uid).then(r => {
+        getUserComments(userStore.dbUser.id).then(r => {
             setUserComments(r && r.length > 0  ? r.length : 0)
         })
     }, [])
 
     const sections = [
-        {title: 'Новости', section: 'news', component: <UserNews userId={userStore.user.uid}/>},
-        {title: 'Вики', section: 'vikis', component: <UserVikis userId={userStore.user.uid}/>},
-        {title: 'Комментарии', section: 'comments', component: <UserComments userId={userStore.user.uid}/> }
+        {title: 'Новости', section: 'news', component: <UserNews userId={userStore.dbUser.id}/>},
+        {title: 'Вики', section: 'vikis', component: <UserVikis userId={userStore.dbUser.id}/>},
+        {title: 'Комментарии', section: 'comments', component: <UserComments userId={userStore.dbUser.id}/> }
     ]
 
     const dialogs = {
@@ -78,8 +78,8 @@ const Profile = observer(() => {
                                         {/*}*/}
                                     </div>
                                     <div>
-                                        <p className="text-center text-2xl font-semibold">{userStore.user.displayName}</p>
-                                        <p className="text-center text-md">{userStore.user.email}</p>
+                                        <p className="text-center text-2xl font-semibold">{userStore.dbUser.nickname}</p>
+                                        <p className="text-center text-md">{userStore.firebaseUser.email}</p>
                                     </div>
                                     <div className="flex justify-center space-x-4 bg-orange-200 rounded-md py-2">
                                         <div className="flex flex-col justify-center items-center">

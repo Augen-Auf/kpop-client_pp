@@ -101,7 +101,7 @@ const CreateNews = observer(() => {
         formData.append('lid', lid)
         formData.append('text', text)
         formData.append('type', 'news')
-        formData.append('author_id', userStore.user.uid)
+        formData.append('author_id', userStore.dbUser.id)
         if (tags.length > 0)
             formData.append('tags', tags.join(','))
         formData.append('image', image)

@@ -94,7 +94,7 @@ const CreateUpdateViki = observer(() => {
         formData.append('short_description', shortDescription)
         formData.append('birthday', birthday)
         formData.append('info', artistInfo)
-        formData.append('author_id', userStore.user.uid)
+        formData.append('author_id', userStore.dbUser.id)
         formData.append('image', image)
         if(isUpdate) {
             const newsData  = await updateVikis(id, formData);

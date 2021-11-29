@@ -8,9 +8,9 @@ export const getCommentRatings = async (commentId) => {
     }
 }
 
-export const setCommentRating = async (commentId, userId, choice, action) => {
+export const setCommentRating = async (commentId, user_id, choice, action) => {
     try {
-        const { data } = await $host.post(`api/comments/${commentId}/ratings/set`, {userId, action, choice});
+        const { data } = await $host.post(`api/comments/${commentId}/ratings/set`, {user_id, action, choice});
         return data
     } catch (e) {
         throw Error(e);

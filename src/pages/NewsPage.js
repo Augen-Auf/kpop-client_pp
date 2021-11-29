@@ -75,7 +75,7 @@ const NewsPage = observer(() => {
                             </Link>
                         </div>
                         <div className="flex flex-col items-end">
-                            <span>{ newsObj.user.name }, { newsObj.createdAt }</span>
+                            <span>{ newsObj.user.nickname }, { newsObj.createdAt }</span>
                             <span>{ newsObj.views } просмотров</span>
                         </div>
                     </div>
@@ -101,9 +101,9 @@ const NewsPage = observer(() => {
                     </div>
 
                     {/*Эмодзи*/}
-                    {userStore.user.uid &&
+                    {userStore.dbUser.id &&
                     <div className="flex justify-center">
-                        <NewsReactions userId={userStore.user.uid} newsId={id}/>
+                        <NewsReactions userId={userStore.dbUser.id} newsId={id}/>
                     </div>
                     }
                     {/*Комментарии*/}

@@ -51,12 +51,17 @@ export const getNewsReactions = async (newsId) => {
     return data
 }
 
-export const setNewsReaction = async (userId, newsId, choice) => {
-    const { data } = await $host.post(`api/news/${newsId}/reactions`, {userId, choice})
+export const setNewsReaction = async (user_id, newsId, choice) => {
+    const { data } = await $host.post(`api/news/${newsId}/reactions`, {user_id, choice})
     return data
 }
 
 export const getAllTags = async () => {
     const { data } = await $host.get(`api/tags`)
+    return data
+}
+
+export const searchNews = async (query) => {
+    const {data} = await $host.post('api/news/search',  {query:  query})
     return data
 }
