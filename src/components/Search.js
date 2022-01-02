@@ -9,7 +9,7 @@ const Search = ({modalLabel}) => {
     const {register, handleSubmit} = useForm();
     const [searchedNews, setSearchedNews]  = useState([])
     const [isEmpty, setIsEmpty] = useState(false)
-    const sendQuery= async (data) => {
+    const sendQuery = async (data) => {
         if(data.searchQuery.trim() !== '') {
             setIsEmpty(false)
             setSearchedNews([])

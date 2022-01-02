@@ -36,7 +36,7 @@ const Comments = observer(({newsId}) => {
                 <div className="space-y-4">
                     {
                         comments.filter(item => item.parent_id === null).map(item =>
-                            <div className="p-4 bg-yellow">
+                            <div className="p-4 bg-yellow rounded-lg">
                                 <Fragment>
                                     <SingleComment comment={item} newsId={newsId} authorId={ userStore.dbUser.id } updateCommentsList={updateCommentsList} />
                                     <ReplyComment comments={comments} newsId={newsId} parentId={item.id} authorId={userStore.dbUser.id} updateCommentsList={updateCommentsList} />
