@@ -17,8 +17,8 @@ export const useAuth = () => useContext(FirebaseAuthContext)
 export function FirebaseAuthContextProvider({ children }) {
     const userStore = new UserStore()
 
-    useEffect( () => {
-        auth.onAuthStateChanged(async (unsubscribe) => {
+    useEffect( async () => {
+        await auth.onAuthStateChanged(async (unsubscribe) => {
             if(unsubscribe) {
                 console.log(unsubscribe)
                 unsubscribe.getIdToken().then((token) => {
@@ -26,7 +26,7 @@ export function FirebaseAuthContextProvider({ children }) {
                 })
 
                 const dbUser = await getUser(unsubscribe.uid)
-
+                console.log(dbUser)
                 userStore.setFirebaseUser(unsubscribe)
                 userStore.setDbUser(dbUser)
                 userStore.setIsAuth(true)

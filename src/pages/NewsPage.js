@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useEffect, useState} from 'react';
 import {useParams, useLocation} from "react-router-dom";
 import {getOneNew} from "../http/NewsAPI";
 import moment from "moment";
@@ -10,6 +10,7 @@ import NewsReactions from "../components/NewsReactions";
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import ReactTooltip from "react-tooltip";
 import {Link} from 'react-scroll'
+import {getAuthorSubscribers, isUserSubscribed, subscribe, unsubscribe} from "../http/SubscriptionAPI";
 
 const NewsPage = observer(() => {
     let { id } = useParams();
@@ -19,6 +20,7 @@ const NewsPage = observer(() => {
 
     const [newsObj, setNewsObj] = useState();
     const [loadedImages, setLoadedImages] = useState([]);
+    const [userSubscribed, setUserSubscribed] = useState(false)
 
     const getNew = async () => {
         return await getOneNew(id)
@@ -29,14 +31,36 @@ const NewsPage = observer(() => {
     }
 
 
-    useEffect(() => {
-        getNew().then( ({news}) => {
-                console.log(news)
-                news.createdAt = moment(news.createdAt).format('DD.MM.YYYY')
-                setNewsObj(news)
-            }
-        )
+    useEffect(async () => {
+        const news = await getNew()
+        news.createdAt = moment(news.createdAt).format('DD.MM.YYYY')
+        console.log(news)
+        setNewsObj(news)
     }, []);
+
+    useEffect(async () => {
+        if(userStore.dbUser.id && newsObj) {
+            const userSubscription = await isUserSubscribed(newsObj.user.id, userStore.dbUser.id)
+            console.log(userSubscription)
+            if (userSubscription) {
+                setUserSubscribed(true)
+            }
+        }
+    },  [userStore.dbUser, newsObj])
+
+    const UpdateUserSubscription = async () => {
+        if(userSubscribed)
+        {
+            await unsubscribe(newsObj.user.id, userStore.dbUser.id)
+            newsObj.user.subscribersCount -= 1
+            setUserSubscribed(false)
+        }
+        else {
+            await subscribe(newsObj.user.id, userStore.dbUser.id)
+            newsObj.user.subscribersCount += 1
+            setUserSubscribed(true)
+        }
+    }
 
     return (
         <div className="w-full">
@@ -91,11 +115,25 @@ const NewsPage = observer(() => {
                                     <div className="text-sm text-black text-opacity-60">{ newsObj.views } просмотров</div>
                                 </div>
                             </div>
-                            <button className="bg-transparent hover:bg-primary text-primary font-semibold hover:text-white p-2 border border-primary hover:border-transparent rounded-box">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </button>
+                            { (userStore.isAuth && userStore.dbUser.id !== newsObj.user.id) &&
+                                <button
+                                    className={`bg-transparent  font-semibold ${ userSubscribed ? "bg-primary text-white border-transparent" : "hover:bg-primary text-primary hover:text-white hover:border-transparent" } p-2 border border-primary rounded-box`}
+                                    onClick={() => UpdateUserSubscription()}>
+                                    {userSubscribed ?
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none"
+                                             viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        :
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none"
+                                             viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                  d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                    }
+                                </button>
+                            }
                         </div>
                     </div>
 

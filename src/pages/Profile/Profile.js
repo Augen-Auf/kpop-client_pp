@@ -9,6 +9,7 @@ import UserComments from "./UserComments";
 import UpdateProfileForm from "./UpdateProfileForm";
 import UpdatePasswordForm from "./UpdatePasswordForm";
 import {getComments, getNews, getVikis} from "../../http/userAPI";
+import {getUserSubscriptions} from "../../http/SubscriptionAPI";
 
 const Profile = observer(() => {
 
@@ -19,6 +20,7 @@ const Profile = observer(() => {
     const [userComments, setUserComments] = useState(0)
     const [userNews, setUserNews] = useState(0)
     const [userVikis, setUserVikis] = useState(0)
+    const [userSubs, setUserSubs] = useState([])
 
     const getUserNews = async (uid) => {
         return await getNews(uid)
@@ -43,6 +45,9 @@ const Profile = observer(() => {
         })
         getUserComments(userStore.dbUser.id).then(r => {
             setUserComments(r && r.length > 0  ? r.length : 0)
+        })
+        getUserSubscriptions(userStore.dbUser.id).then(r =>{
+            setUserSubs(r)
         })
     }, [])
 
@@ -81,28 +86,56 @@ const Profile = observer(() => {
                                         <p className="text-center text-2xl font-semibold">{userStore.dbUser.nickname}</p>
                                         <p className="text-center text-md">{userStore.firebaseUser.email}</p>
                                     </div>
-                                    <div className="flex justify-center space-x-4 bg-orange-200 rounded-md py-2">
-                                        <div className="flex flex-col justify-center items-center">
-                                            <span className="text-2xl font-medium">{ userNews }</span>
-                                            <span className="text-xs">новостей</span>
-                                        </div>
-                                        <div className="flex flex-col justify-center items-center">
-                                            <span className="text-2xl font-medium">{userVikis}</span>
-                                            <span className="text-xs">вики</span>
-                                        </div>
-                                        <div className="flex flex-col justify-center items-center">
-                                            <span className="text-2xl font-medium">{userComments}</span>
-                                            <span className="text-xs">комментов</span>
-                                        </div>
-                                    </div>
+
+                                    <button className="bg-pink text-lg rounded-md py-2 focus:outline-none" onClick={() => openDialog('updateProfile')}>
+                                        Редактировать
+                                    </button>
+                                    <button className="bg-pink text-lg rounded-md py-2 focus:outline-none" onClick={() => openDialog('updatePassword')}>
+                                        Сменить пароль
+                                    </button>
                                 </div>
                             </div>
-                            <button className="bg-pink text-lg rounded-md py-2 shadow-md focus:outline-none" onClick={() => openDialog('updateProfile')}>
-                                Редактировать
-                            </button>
-                            <button className="bg-pink text-lg rounded-md py-2 shadow-md focus:outline-none" onClick={() => openDialog('updatePassword')}>
-                                Сменить пароль
-                            </button>
+
+                            <div className="flex justify-center shadow-md space-x-4 bg-orange-200 rounded-md py-2">
+                                <div className="flex flex-col justify-center items-center">
+                                    <span className="text-2xl font-extrabold">{ userNews }</span>
+                                    <span className="text-sm text-opacity-60">новостей</span>
+                                </div>
+                                <div className="flex flex-col justify-center items-center">
+                                    <span className="text-2xl font-extrabold">{userVikis}</span>
+                                    <span className="text-sm text-opacity-60">вики</span>
+                                </div>
+                                <div className="flex flex-col justify-center items-center">
+                                    <span className="text-2xl font-extrabold">{userComments}</span>
+                                    <span className="text-sm text-opacity-60">комментов</span>
+                                </div>
+                            </div>
+                            <div className="flex flex-col justify-center shadow-md bg-secondary rounded-md p-2">
+                                <p className="text-lg p-2">Подписки</p>
+                                {
+                                  userSubs ? userSubs.map( sub => {
+                                      return (
+                                          <div className="flex items-center space-x-2 justify-start bg-primary p-2 rounded-box hover:bg-primary-focus">
+                                              <div className="avatar">
+                                                  <div className="w-8 h-8 p-px bg-opacity-10 mask mask-hexagon bg-base-content">
+                                                      {
+                                                          sub.author.avatarId ?
+                                                              <img src="" className="mask mask-hexagon"/>
+                                                              :
+                                                              <div className="w-full h-full bg-secondary mask mask-hexagon"/>
+                                                      }
+                                                  </div>
+                                              </div>
+                                              <div className="text-lg font-extrabold flex items-center">{ sub.author.nickname }</div>
+                                          </div>
+                                      )
+                                  }) :
+                                      <span>
+                                          Нет подписок
+                                      </span>
+                                }
+                            </div>
+
                         </div>
                     </aside>
                     <main className="lg:w-4/6">
