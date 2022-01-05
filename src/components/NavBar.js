@@ -10,7 +10,7 @@ import {
     NEWS_ROUTE,
     PROFILE_ROUTE,
     REGISTRATION_ROUTE,
-    ROUTE_NAMES,
+    TESTS_ROUTE,
     STATISTICS_ROUTE,
     TRENDS_ROUTE, VIKIS_ROUTE
 } from "../utils/consts";
@@ -38,6 +38,8 @@ const NavBar = observer(() => {
         {title:'ТРЕНДЫ', link:TRENDS_ROUTE},
         {title:'МУЗЫКА', link:MUSIC_ROUTE},
         {title:'АНАЛИЗ', link:STATISTICS_ROUTE},
+        {title:'ТЕСТЫ', link:TESTS_ROUTE},
+
     ];
     const unauth_profile = [{title:'Войти', link: LOGIN_ROUTE}, {title:'Зарегистрироваться', link: REGISTRATION_ROUTE}];
     const currentSectionTitle = routesList.find( item => location.pathname === item.path)?.name

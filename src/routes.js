@@ -15,7 +15,12 @@ import {
     UPDATE_NEWS_ROUTE,
     CREATE_VIKI_ROUTE,
     UPDATE_VIKI_ROUTE,
-    VIKI_PAGE_ROUTE, SEARCH_ROUTE
+    VIKI_PAGE_ROUTE,
+    SEARCH_ROUTE,
+    USER_PAGE_ROUTE,
+    TESTS_ROUTE,
+    CREATE_TEST_ROUTE,
+    TEST_PAGE_ROUTE
 } from "./utils/consts";
 
 import Admin from "./pages/Admin";
@@ -33,6 +38,9 @@ import Articles from "./pages/Articles";
 import CreateUpdateViki from "./pages/Vikis/CreateUpdateViki";
 import VikiPage from "./pages/Vikis/VikiPage";
 import Search from "./components/Search";
+import UserPage from "./pages/UserPage";
+import Tests from "./pages/Tests/Tests";
+import CreateTestPage from "./pages/Tests/CreateTestPage";
 
 export const authRoutes = [
     {
@@ -65,6 +73,11 @@ export const authRoutes = [
         name: 'Изменить новость',
         Component: CreateNews
     },
+    {
+        path: CREATE_TEST_ROUTE,
+        name: 'Создать тест',
+        Component: CreateTestPage
+    },
 ];
 
 export const publicRoutes = [
@@ -72,6 +85,16 @@ export const publicRoutes = [
         path: SEARCH_ROUTE,
         name: 'Поиск',
         Component: Search
+    },
+    {
+      path: TESTS_ROUTE,
+      name: 'Тесты',
+      Component: Tests
+    },
+    {
+        path: USER_PAGE_ROUTE,
+        name: 'Страница пользователя',
+        Component: Profile
     },
     {
         path: VIKIS_ROUTE,

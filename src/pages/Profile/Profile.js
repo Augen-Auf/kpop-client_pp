@@ -34,6 +34,10 @@ const Profile = observer(() => {
         return await getVikis(uid)
     }
 
+    const getSubscriptions = async (uid) => {
+        return await getUserSubscriptions(uid)
+    }
+
     useEffect(() => {
         getUserNews(userStore.dbUser.id).then(r => {
             console.log(r)
@@ -46,7 +50,7 @@ const Profile = observer(() => {
         getUserComments(userStore.dbUser.id).then(r => {
             setUserComments(r && r.length > 0  ? r.length : 0)
         })
-        getUserSubscriptions(userStore.dbUser.id).then(r =>{
+        getSubscriptions(userStore.dbUser.id).then(r => {
             setUserSubs(r)
         })
     }, [])
@@ -71,7 +75,7 @@ const Profile = observer(() => {
 
     return (
         <>
-            <div className={`w-full z-0 font-montserrat font-normal ${isOpen ? 'px-10' : 'px-10'} py-14`}>
+            <div className={`w-full z-0 font-montserrat font-normal px-10 py-14`}>
                 <div className="flex lg:flex-row flex-col w-full h-full justify-center lg:space-x-10 lg:space-y-0 space-y-10">
                     <aside className="lg:w-1/5 lg:sticky h-1/3 lg:top-10">
                         <div className="flex flex-col space-y-4">

@@ -18,20 +18,27 @@ export function FirebaseAuthContextProvider({ children }) {
     const userStore = new UserStore()
 
     useEffect( async () => {
-        await auth.onAuthStateChanged(async (unsubscribe) => {
+        console.log('init')
+        const authListener = auth.onAuthStateChanged(async (unsubscribe) => {
             if(unsubscribe) {
-                console.log(unsubscribe)
-                unsubscribe.getIdToken().then((token) => {
-                    localStorage.setItem("token", token)
-                })
-
-                const dbUser = await getUser(unsubscribe.uid)
-                console.log(dbUser)
-                userStore.setFirebaseUser(unsubscribe)
-                userStore.setDbUser(dbUser)
-                userStore.setIsAuth(true)
+                try {
+                    console.log(unsubscribe)
+                    unsubscribe.getIdToken().then((token) => {
+                        localStorage.setItem("token", token)
+                    })
+                    const dbUser = await getUser(unsubscribe.uid)
+                    console.log(dbUser)
+                    userStore.setFirebaseUser(unsubscribe)
+                    userStore.setDbUser(dbUser)
+                    userStore.setIsAuth(true)
+                }
+                catch (e) {
+                    console.log('error')
+                }
             }
         })
+
+        return () => authListener()
     }, [])
 
     async function signUp(email, nickname, password) {
