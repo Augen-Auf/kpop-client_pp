@@ -9,7 +9,8 @@ const FirebaseAuthContext = createContext({
     userStore: {},
     signIn: () => Promise,
     signUp: () => Promise,
-    signUpWithGoogle: () => Promise
+    signUpWithGoogle: () => Promise,
+    signOut: () => Promise
 })
 
 export const useAuth = () => useContext(FirebaseAuthContext)
@@ -106,7 +107,11 @@ export function FirebaseAuthContextProvider({ children }) {
         })
     }
 
-    const value = { userStore, signIn, signUp, signUpWithGoogle }
+    function signOut() {
+        return auth.signOut()
+    }
+
+    const value = { userStore, signIn, signUp, signUpWithGoogle, signOut }
     return (
         <FirebaseAuthContext.Provider value={value}>
             { children }

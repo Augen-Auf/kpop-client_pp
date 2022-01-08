@@ -35,3 +35,8 @@ export const isUserSubscribed  =  async (author_id, user_id)  => {
     return data
 }
 
+export const getUserSubscriptionsNews = async (user_id) => {
+    const {data} = await $authHost.get('api/subscription/user/' + user_id + '/news');
+    return data
+};
+

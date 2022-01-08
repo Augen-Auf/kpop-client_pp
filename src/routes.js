@@ -20,7 +20,9 @@ import {
     USER_PAGE_ROUTE,
     TESTS_ROUTE,
     CREATE_TEST_ROUTE,
-    TEST_PAGE_ROUTE
+    TEST_PAGE_ROUTE,
+    UPDATE_TEST_ROUTE,
+    AUTHOR_ROUTE
 } from "./utils/consts";
 
 import Admin from "./pages/Admin";
@@ -41,6 +43,7 @@ import Search from "./components/Search";
 import UserPage from "./pages/UserPage";
 import Tests from "./pages/Tests/Tests";
 import CreateTestPage from "./pages/Tests/CreateTestPage";
+import TestPage from "./pages/Tests/TestPage";
 
 export const authRoutes = [
     {
@@ -78,6 +81,11 @@ export const authRoutes = [
         name: 'Создать тест',
         Component: CreateTestPage
     },
+    {
+        path: UPDATE_TEST_ROUTE,
+        name: 'Обновить тест',
+        Component: CreateTestPage
+    },
 ];
 
 export const publicRoutes = [
@@ -87,9 +95,14 @@ export const publicRoutes = [
         Component: Search
     },
     {
-      path: TESTS_ROUTE,
-      name: 'Тесты',
-      Component: Tests
+        path: TESTS_ROUTE,
+        name: 'Тесты',
+        Component: Tests
+    },
+    {
+        path: TEST_PAGE_ROUTE,
+        name: 'Страница теста',
+        Component: TestPage
     },
     {
         path: USER_PAGE_ROUTE,
@@ -120,6 +133,11 @@ export const publicRoutes = [
         path: PORTAL_ROUTE,
         name: 'Портал',
         Component: Portal
+    },
+    {
+        path: AUTHOR_ROUTE,
+        name: 'Страница автора',
+        Component: Profile
     },
     {
         path: NEWS_ROUTE,

@@ -19,6 +19,7 @@ import {observer} from "mobx-react-lite";
 import {Link, useLocation} from "react-router-dom";
 import {publicRoutes, authRoutes} from "../routes";
 import Search from "./Search";
+import defaultAvatar from "../style/img/devault_avatar.jpg"
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
@@ -26,9 +27,9 @@ function classNames(...classes) {
 
 const NavBar = observer(() => {
 
-    const { userStore } = useAuth();
+    const { userStore, signOut } = useAuth();
     const location = useLocation();
-    const [avatar,setAvatar] = useState()
+    const [avatar,setAvatar] = useState(null)
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const routesList = [ ...publicRoutes, ...authRoutes ]
 
@@ -45,6 +46,7 @@ const NavBar = observer(() => {
     const currentSectionTitle = routesList.find( item => location.pathname === item.path)?.name
 
     const logOut = () => {
+        signOut()
         userStore.setDbUser({});
         userStore.setFirebaseUser({});
         userStore.setIsAuth(false);
@@ -55,6 +57,14 @@ const NavBar = observer(() => {
         {title:'Мой профиль', link: PROFILE_ROUTE},
         {title:'Выйти', func: () => logOut()}
     ];
+
+    useEffect(() => {
+        setAvatar(userStore.isAuth ?
+            userStore.dbUser.avatarId ?
+                process.env.REACT_APP_API_URL + 'api/avatar/' + userStore.dbUser.avatarId : defaultAvatar
+            :
+            null)
+    }, [userStore.isAuth])
 
     return (
         <div className='font-montserrat font-medium'>
@@ -80,13 +90,13 @@ const NavBar = observer(() => {
                         </div>
                         <div className="hidden md:block w-8/12">
                             <div className="flex items-center justify-end">
-                            {navigation.map((item, itemIdx) =>
-                                <Fragment key={'menu-item_' + itemIdx}>
-                                    <Link to={item.link} className={`text-black bg-blue-dark ${location.pathname === item.link ? 'bg-pink':'hover:bg-pink'} px-5 py-5 text-sm font-medium`}>
-                                        {item.title}
-                                    </Link>
-                                </Fragment>
-                            )}
+                                {navigation.map((item, itemIdx) =>
+                                    <Fragment key={'menu-item_' + itemIdx}>
+                                        <Link to={item.link} className={`text-black bg-blue-dark ${location.pathname === item.link ? 'bg-pink':'hover:bg-pink'} px-5 py-5 text-sm font-medium`}>
+                                            {item.title}
+                                        </Link>
+                                    </Fragment>
+                                )}
                             </div>
                         </div>
                         <div className="w-3/12 flex md:justify-around justify-between md:ml-10">
@@ -106,10 +116,18 @@ const NavBar = observer(() => {
                                         <>
                                             <div>
                                                 <Menu.Button className="max-w-xs bg-gray-800 rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
-                                                    <div className="rounded-full h-10 w-10 bg-pink">
-                                                        {/*{userStore.user.avatarId &&*/}
-                                                        {/*<img src={process.env.REACT_APP_API_URL + 'api/avatar/' + user.user.avatarId} className="object-cover rounded-full w-full h-full" alt=""/>*/}
-                                                        {/*}*/}
+                                                    <div className="rounded-full h-10 w-10 bg-pink flex justify-center items-center">
+                                                        {
+                                                            avatar ?
+                                                                <img
+                                                                    src={avatar}
+                                                                    className="object-cover rounded-full w-full h-full" alt=""/>
+                                                                :
+                                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                                                                </svg>
+
+                                                        }
                                                     </div>
                                                 </Menu.Button>
                                             </div>

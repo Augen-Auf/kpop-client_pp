@@ -1,5 +1,5 @@
 import React, { useEffect, useState} from 'react';
-import {useParams, useLocation} from "react-router-dom";
+import {useParams, useLocation, Link} from "react-router-dom";
 import {getOneNew} from "../http/NewsAPI";
 import moment from "moment";
 import 'moment/locale/ru'
@@ -9,8 +9,8 @@ import Comments from "../components/Comments";
 import NewsReactions from "../components/NewsReactions";
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import ReactTooltip from "react-tooltip";
-import {Link} from 'react-scroll'
 import {getAuthorSubscribers, isUserSubscribed, subscribe, unsubscribe} from "../http/SubscriptionAPI";
+import defaultAvatar from "../style/img/devault_avatar.jpg";
 
 const NewsPage = observer(() => {
     let { id } = useParams();
@@ -101,38 +101,36 @@ const NewsPage = observer(() => {
                         <div className="flex items-center space-x-4 p-2 shadow-lg rounded-box bg-yellow">
                             <div className="flex items-center space-x-2">
                                 <div className="avatar">
-                                    <div className="w-16 h-16 p-px bg-opacity-10 mask mask-hexagon bg-base-content">
-                                        {
-                                            newsObj.user.avatarId ?
-                                                <img src="" className="mask mask-hexagon"/>
-                                                :
-                                                <div className="w-full h-full bg-pink mask mask-hexagon"/>
-                                        }
+                                    <div className="w-16 h-16 p-px bg-opacity-10 mask mask-circle bg-base-content">
+                                        <img src={newsObj.user.avatarId ?
+                                            process.env.REACT_APP_API_URL + 'api/avatar/' + newsObj.user.avatarId :
+                                            defaultAvatar}
+                                             className="mask mask-circle"/>
                                     </div>
                                 </div>
                                 <div>
-                                    <div className="text-lg font-extrabold">{ newsObj.user.nickname }</div>
+                                    <Link to={'/author/' + newsObj.author_id} className="text-lg font-extrabold hover:text-primary">{ newsObj.user.nickname }</Link>
                                     <div className="text-sm text-black text-opacity-60">{ newsObj.views } просмотров</div>
                                 </div>
                             </div>
                             { (userStore.isAuth && userStore.dbUser.id !== newsObj.user.id) &&
-                                <button
-                                    className={`bg-transparent  font-semibold ${ userSubscribed ? "bg-primary text-white border-transparent" : "hover:bg-primary text-primary hover:text-white hover:border-transparent" } p-2 border border-primary rounded-box`}
-                                    onClick={() => UpdateUserSubscription()}>
-                                    {userSubscribed ?
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none"
-                                             viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                        :
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none"
-                                             viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                                  d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                    }
-                                </button>
+                            <button
+                                className={`bg-transparent  font-semibold ${ userSubscribed ? "bg-primary text-white border-transparent" : "hover:bg-primary text-primary hover:text-white hover:border-transparent" } p-2 border border-primary rounded-box`}
+                                onClick={() => UpdateUserSubscription()}>
+                                {userSubscribed ?
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none"
+                                         viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    :
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none"
+                                         viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                              d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                }
+                            </button>
                             }
                         </div>
                     </div>

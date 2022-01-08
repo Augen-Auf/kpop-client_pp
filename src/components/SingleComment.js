@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import CommentRating from "./CommentRating";
 import CommentInput from "./CommentInput";
 import moment from "moment";
+import defaultAvatar from "../style/img/devault_avatar.jpg";
 
 const SingleComment = ({comment, newsId, updateCommentsList, authorId}) => {
 
@@ -16,8 +17,7 @@ const SingleComment = ({comment, newsId, updateCommentsList, authorId}) => {
     }
 
     useEffect(() => {
-        if(user.avatarId)
-            setAvatar(process.env.REACT_APP_API_URL + 'api/avatar/' + user.avatarId)
+        setAvatar(user.avatarId ? process.env.REACT_APP_API_URL + 'api/avatar/' + user.avatarId : defaultAvatar)
     },[])
 
 
@@ -25,12 +25,10 @@ const SingleComment = ({comment, newsId, updateCommentsList, authorId}) => {
         <div className="flex-col space-y-3">
             <div className="flex justify-between items-center space-x-3">
                 <div className="rounded-full h-14 w-14 bg-pink">
-                    {avatar &&
-                        <img src={avatar} className="object-cover rounded-full w-full h-full" alt=""/>
-                    }
+                    <img src={avatar} className="object-cover rounded-full w-full h-full" alt=""/>
                 </div>
                 <div className="flex flex-col flex-grow">
-                    <span className="text-xl font-semibold">{ user.name }</span>
+                    <span className="text-xl font-semibold">{ user.nickname }</span>
                     <span className="text-sm text-gray-500">{ localeDate(createdAt) }</span>
                 </div>
                 <CommentRating commentId={id} userId={authorId}/>

@@ -33,8 +33,8 @@ const Music = observer(() => {
             'method': 'POST',
             'headers': {
                 'Content-Type':'application/x-www-form-urlencoded',
-                'Authorization': 'Basic ' + (new Buffer(process.env.REACT_APP_SPOTIFY_TOKEN + ':' +
-                    process.env.REACT_APP_SPOTIFY_KEY).toString('base64')),
+                'Authorization': 'Basic ' + (new Buffer(process.env.REACT_APP_SPOTIFY_CLIENT_ID + ':' +
+                    process.env.REACT_APP_SPOTIFY_CLIENT_SECRET).toString('base64')),
             },
             data: 'grant_type=client_credentials'
         });

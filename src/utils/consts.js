@@ -2,6 +2,7 @@ export const ADMIN_ROUTE = '/admin';
 export const LOGIN_ROUTE = '/login';
 export const REGISTRATION_ROUTE = '/registration';
 export const PROFILE_ROUTE = '/profile';
+export const AUTHOR_ROUTE = '/author/:id';
 export const PORTAL_ROUTE = '/kpopworld';
 export const NEWS_ROUTE = '/news';
 export const SEARCH_ROUTE = '/search';
@@ -18,7 +19,8 @@ export const STATISTICS_ROUTE = '/statistics';
 export const TRENDS_ROUTE = '/trends';
 export const MUSIC_ROUTE = '/music';
 export const TESTS_ROUTE = '/tests';
-export const CREATE_TEST_ROUTE = '/tests/create'
+export const CREATE_TEST_ROUTE = '/create/tests'
+export const UPDATE_TEST_ROUTE = '/update/tests/:id'
 export const TEST_PAGE_ROUTE = '/tests/:id'
 
 

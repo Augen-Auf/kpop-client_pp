@@ -32,7 +32,8 @@ const CreateNews = observer(() => {
     useEffect(() => {
         if(isUpdate) {
             getNew(id).then(r => {
-                const { news } = r
+                const news  = r
+                console.log(r)
                 setText(news.text)
                 setTags(news.tags.map( item => item.tag))
                 setValue('lid', news.lid)
@@ -192,9 +193,9 @@ const CreateNews = observer(() => {
                                 </button>
                             </div>
                             <div>
-                            {tags && tags.map((item, index) => {
-                                return <Tag key={'tag_'+index} tagName={item} removeHandler={removeTagHandler}/>
-                            })}
+                                {tags && tags.map((item, index) => {
+                                    return <Tag key={'tag_'+index} tagName={item} removeHandler={removeTagHandler}/>
+                                })}
                             </div>
                         </div>
                         <div className=" flex justify-between">

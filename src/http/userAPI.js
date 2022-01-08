@@ -6,13 +6,23 @@ export const createUser = async  (uid, nickname) => {
         return data
     }
     catch (e) {
-       throw new Error(e.response.data.message)
+        throw new Error(e.response.data.message)
     }
 };
 
 export const getUser = async  (uid) => {
     try {
         const { data } = await $host.get('api/user/' + uid);
+        return data
+    }
+    catch (e) {
+        throw new Error(e.response.data.message)
+    }
+};
+
+export const getUserInfo = async  (id) => {
+    try {
+        const { data } = await $host.get('api/user/info/' + id);
         return data
     }
     catch (e) {

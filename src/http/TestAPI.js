@@ -1,8 +1,18 @@
 import {$authHost, $host} from './index'
 
-export const createTest = async  (name, description, questions, answers, correct_answers) => {
+export const createTest = async  (name, description, questions, author_id) => {
     try {
-        const {data} = await $host.post('api/user/', { name, description, questions, answers, correct_answers })
+        const {data} = await $authHost.post('api/tests/', { name, description, questions, author_id })
+        return data
+    }
+    catch (e) {
+        throw new Error(e.response.data.message)
+    }
+};
+
+export const updateTest = async  (name, description, questions, test_id) => {
+    try {
+        const {data} = await $authHost.put('api/tests/' + test_id, { name, description, questions })
         return data
     }
     catch (e) {
@@ -20,9 +30,39 @@ export const getTest = async  (id) => {
     }
 };
 
-export const getAllTests = async  (id) => {
+export const getTestQuestions = async (id) => {
+    try {
+        const { data } = await $host.get('api/tests/' + id + '/questions');
+        return data
+    }
+    catch (e) {
+        throw new Error(e.response.data.message)
+    }
+};
+
+export const getTestInfo = async  (id) => {
+    try {
+        const { data } = await $host.get('api/tests/info/' + id);
+        return data
+    }
+    catch (e) {
+        throw new Error(e.response.data.message)
+    }
+};
+
+export const getAllTests = async  () => {
     try {
         const { data } = await $host.get('api/tests/');
+        return data
+    }
+    catch (e) {
+        throw new Error(e.response.data.message)
+    }
+};
+
+export const getAllUserTests = async (id) => {
+    try {
+        const { data } = await $host.get('api/tests/user/' + id);
         return data
     }
     catch (e) {
@@ -40,9 +80,20 @@ export const deleteTest = async (id) => {
     }
 };
 
-export const createTestResult = async (score, user_id, post_id) => {
+export const createTestResult = async (answers, user_id, test_id) => {
     try {
-     const  { data } = await $authHost.post('api/tests/score',{score, user_id, post_id})
+        const  { data } = await $authHost.post('api/tests/score/create',{answers, user_id, test_id})
+        return data
+    }
+    catch (e) {
+        throw new Error(e.response.data.message)
+    }
+}
+
+export const getUserTestResult =  async (user_id, test_id) => {
+    try {
+        const  { data } = await $authHost.post('api/tests/score',{user_id, test_id})
+        return data
     }
     catch (e) {
         throw new Error(e.response.data.message)

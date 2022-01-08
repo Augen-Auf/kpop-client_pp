@@ -8,10 +8,19 @@ import UserVikis from "./UserVikis";
 import UserComments from "./UserComments";
 import UpdateProfileForm from "./UpdateProfileForm";
 import UpdatePasswordForm from "./UpdatePasswordForm";
-import {getComments, getNews, getVikis} from "../../http/userAPI";
-import {getUserSubscriptions} from "../../http/SubscriptionAPI";
+import {getComments, getNews, getUserInfo, getVikis} from "../../http/userAPI";
+import {getUserSubscriptions, isUserSubscribed, subscribe, unsubscribe} from "../../http/SubscriptionAPI";
+import {getAllUserTests} from "../../http/TestAPI";
+import UserTests from "./UserTests";
+import {useHistory, useLocation, useParams} from "react-router-dom";
+import defaultAvatar from "../../style/img/devault_avatar.jpg";
 
 const Profile = observer(() => {
+
+    const { id } = useParams()
+    const location = useLocation()
+    const history = useHistory()
+
 
     const {userStore} = useAuth();
 
@@ -21,6 +30,10 @@ const Profile = observer(() => {
     const [userNews, setUserNews] = useState(0)
     const [userVikis, setUserVikis] = useState(0)
     const [userSubs, setUserSubs] = useState([])
+    const [userTests, setUserTests] = useState(0)
+    const [authorInfo, setAuthorInfo] = useState()
+    const [userSubscribed, setUserSubscribed] = useState(false)
+    const [avatar,setAvatar] = useState(null)
 
     const getUserNews = async (uid) => {
         return await getNews(uid)
@@ -34,31 +47,59 @@ const Profile = observer(() => {
         return await getVikis(uid)
     }
 
+    const getUserTests = async (uid) => {
+        return await getAllUserTests(uid)
+    }
+
     const getSubscriptions = async (uid) => {
         return await getUserSubscriptions(uid)
     }
 
     useEffect(() => {
-        getUserNews(userStore.dbUser.id).then(r => {
+        let avatarId = userStore.isAuth ? userStore.dbUser.avatarId : authorInfo.avatarId
+        setAvatar(avatarId ? process.env.REACT_APP_API_URL + 'api/avatar/' + avatarId : defaultAvatar)
+    }, [userStore.isAuth, authorInfo])
+
+    useEffect(async () => {
+        if(userStore.dbUser.id && id) {
+            const userSubscription = await isUserSubscribed(id, userStore.dbUser.id)
+            console.log(userSubscription)
+            if (userSubscription) {
+                setUserSubscribed(true)
+            }
+        }
+    },  [userStore.dbUser, id])
+
+    useEffect(async () => {
+        if(id) {
+            const author = await getUserInfo(id)
+            setAuthorInfo(author)
+        }
+
+        getUserNews(id || userStore.dbUser.id).then(r => {
             console.log(r)
             setUserNews(r && r.length > 0  ? r.length : 0)
         });
-        getUserVikis(userStore.dbUser.id).then(r => {
+        getUserVikis(id || userStore.dbUser.id).then(r => {
             console.log('articles', r)
             setUserVikis(r && r.length > 0 ? r.length : 0)
         })
-        getUserComments(userStore.dbUser.id).then(r => {
+        getUserComments(id || userStore.dbUser.id).then(r => {
             setUserComments(r && r.length > 0  ? r.length : 0)
         })
-        getSubscriptions(userStore.dbUser.id).then(r => {
+        getUserTests(id || userStore.dbUser.id).then(r => {
+            setUserTests(r && r.length > 0  ? r.length : 0)
+        })
+        getSubscriptions(id || userStore.dbUser.id).then(r => {
             setUserSubs(r)
         })
     }, [])
 
     const sections = [
-        {title: 'Новости', section: 'news', component: <UserNews userId={userStore.dbUser.id}/>},
-        {title: 'Вики', section: 'vikis', component: <UserVikis userId={userStore.dbUser.id}/>},
-        {title: 'Комментарии', section: 'comments', component: <UserComments userId={userStore.dbUser.id}/> }
+        {title: 'Новости', section: 'news', component: <UserNews userId={id || userStore.dbUser.id} />},
+        {title: 'Вики', section: 'vikis', component: <UserVikis userId={id || userStore.dbUser.id} />},
+        {title: 'Комментарии', section: 'comments', component: <UserComments userId={id || userStore.dbUser.id} /> },
+        {title: 'Тесты', section: 'tests', component: <UserTests userId={id || userStore.dbUser.id} /> }
     ]
 
     const dialogs = {
@@ -73,8 +114,29 @@ const Profile = observer(() => {
         setIsOpen(true);
     }
 
+    const UpdateUserSubscription = async () => {
+        if(userSubscribed)
+        {
+            await unsubscribe(id, userStore.dbUser.id)
+            setUserSubscribed(false)
+        }
+        else {
+            await subscribe(id, userStore.dbUser.id)
+            setUserSubscribed(true)
+        }
+    }
+
     return (
         <>
+            {
+                location.pathname.includes('/author') &&
+                <header className="bg-pink">
+                    <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                        <h1 className="text-3xl font-medium text-gray-900">Профиль автора</h1>
+                    </div>
+                </header>
+            }
+
             <div className={`w-full z-0 font-montserrat font-normal px-10 py-14`}>
                 <div className="flex lg:flex-row flex-col w-full h-full justify-center lg:space-x-10 lg:space-y-0 space-y-10">
                     <aside className="lg:w-1/5 lg:sticky h-1/3 lg:top-10">
@@ -82,25 +144,38 @@ const Profile = observer(() => {
                             <div className="bg-yellow rounded-md shadow-md ">
                                 <div className="flex flex-col px-3 py-4 space-y-5 text-black">
                                     <div className="rounded-full lg:w-48 lg:h-48 w-32 h-32 mx-auto bg-pink">
-                                        {/*{user.user.avatarId &&*/}
-                                        {/*<img src={ user.user.avatarId ? process.env.REACT_APP_API_URL + 'api/avatar/' + user.user.avatarId : 'img/Sunmi.jpg' } className="object-cover h-full w-full rounded-full"/>*/}
-                                        {/*}*/}
+                                        {avatar &&
+                                        <img src={ avatar } className="object-cover h-full w-full rounded-full"/>
+                                        }
                                     </div>
                                     <div>
-                                        <p className="text-center text-2xl font-semibold">{userStore.dbUser.nickname}</p>
-                                        <p className="text-center text-md">{userStore.firebaseUser.email}</p>
+                                        <p className="text-center text-2xl font-semibold">{authorInfo ? authorInfo.nickname : userStore.dbUser.nickname}</p>
                                     </div>
-
-                                    <button className="bg-pink text-lg rounded-md py-2 focus:outline-none" onClick={() => openDialog('updateProfile')}>
-                                        Редактировать
-                                    </button>
-                                    <button className="bg-pink text-lg rounded-md py-2 focus:outline-none" onClick={() => openDialog('updatePassword')}>
-                                        Сменить пароль
-                                    </button>
+                                    {
+                                        authorInfo ? (userStore.isAuth && userStore.dbUser.id !== id) &&
+                                            <button
+                                                className="btn btn-primary"
+                                                onClick={() => UpdateUserSubscription()}>
+                                                {userSubscribed ?
+                                                    'Отписаться'
+                                                    :
+                                                    'Подписаться'
+                                                }
+                                            </button>
+                                            :
+                                            <Fragment>
+                                                <button className="bg-pink text-lg rounded-md py-2 focus:outline-none" onClick={() => openDialog('updateProfile')}>
+                                                    Редактировать
+                                                </button>
+                                                <button className="bg-pink text-lg rounded-md py-2 focus:outline-none" onClick={() => openDialog('updatePassword')}>
+                                                    Сменить пароль
+                                                </button>
+                                            </Fragment>
+                                    }
                                 </div>
                             </div>
 
-                            <div className="flex justify-center shadow-md space-x-4 bg-orange-200 rounded-md py-2">
+                            <div className="grid lg:grid-cols-2 grid-cols-4 gap-2 shadow-md bg-orange-200 rounded-md p-2">
                                 <div className="flex flex-col justify-center items-center">
                                     <span className="text-2xl font-extrabold">{ userNews }</span>
                                     <span className="text-sm text-opacity-60">новостей</span>
@@ -113,33 +188,42 @@ const Profile = observer(() => {
                                     <span className="text-2xl font-extrabold">{userComments}</span>
                                     <span className="text-sm text-opacity-60">комментов</span>
                                 </div>
+                                <div className="flex flex-col justify-center items-center">
+                                    <span className="text-2xl font-extrabold">{userTests}</span>
+                                    <span className="text-sm text-opacity-60">тестов</span>
+                                </div>
                             </div>
-                            <div className="flex flex-col justify-center shadow-md bg-secondary rounded-md p-2">
-                                <p className="text-lg p-2">Подписки</p>
-                                {
-                                  userSubs ? userSubs.map( sub => {
-                                      return (
-                                          <div className="flex items-center space-x-2 justify-start bg-primary p-2 rounded-box hover:bg-primary-focus">
-                                              <div className="avatar">
-                                                  <div className="w-8 h-8 p-px bg-opacity-10 mask mask-hexagon bg-base-content">
-                                                      {
-                                                          sub.author.avatarId ?
-                                                              <img src="" className="mask mask-hexagon"/>
-                                                              :
-                                                              <div className="w-full h-full bg-secondary mask mask-hexagon"/>
-                                                      }
-                                                  </div>
-                                              </div>
-                                              <div className="text-lg font-extrabold flex items-center">{ sub.author.nickname }</div>
-                                          </div>
-                                      )
-                                  }) :
-                                      <span>
+                            {
+                                !authorInfo &&
+                                <div className="flex flex-col justify-center shadow-md bg-secondary rounded-md p-2">
+                                    <p className="text-lg p-2">Подписки</p>
+                                    {
+                                        userSubs.length > 0 ? userSubs.map( sub => {
+                                                return (
+                                                    <div
+                                                        className="flex items-center space-x-2 justify-start bg-primary
+                                              p-2 rounded-box hover:bg-primary-focus"
+                                                        onClick={() => history.push('/author/' + sub.author.id) }>
+                                                        <div className="avatar">
+                                                            <div className="w-8 h-8 p-px bg-opacity-10 mask mask-circle bg-base-content">
+                                                                {
+                                                                    sub.author.avatarId ?
+                                                                        <img src="" className="mask mask-circle"/>
+                                                                        :
+                                                                        <div className="w-full h-full bg-secondary mask mask-circle"/>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div className="text-lg font-extrabold flex items-center">{ sub.author.nickname }</div>
+                                                    </div>
+                                                )
+                                            }) :
+                                            <span className="p-3">
                                           Нет подписок
                                       </span>
-                                }
-                            </div>
-
+                                    }
+                                </div>
+                            }
                         </div>
                     </aside>
                     <main className="lg:w-4/6">
