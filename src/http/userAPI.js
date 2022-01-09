@@ -30,10 +30,21 @@ export const getUserInfo = async  (id) => {
     }
 };
 
-export const updateUser = async (uid, nickname) => {
+export const updateUser = async (uid, nickname, email, avatarImage, avatarAction) => {
 
     try {
-        const { data } = await $authHost.put('api/user/' + uid,{nickname});
+
+        let formData = new FormData()
+        formData.append('nickname', nickname)
+        if(email)
+            formData.append('email', email)
+        formData.append('img', avatarImage)
+        formData.append('avatarAction', avatarAction)
+
+        const { data } = await $authHost.put('api/user/' + uid + '/change', formData, {headers: {
+                'Content-Type': 'multipart/form-data'
+            }});
+        console.log('data', data)
         return data
     }
     catch (e) {
@@ -41,11 +52,10 @@ export const updateUser = async (uid, nickname) => {
     }
 }
 
-export const changePassword = async (userId, oldPassword, newPassword) => {
-    console.log(userId)
+export const changePassword = async (uid, newPassword) => {
     try {
-        const { data } = await $authHost.post('api/user/password/change', {userId, oldPassword, newPassword});
-        localStorage.removeItem('token');
+        const { data } = await $authHost.post('api/user/' + uid + '/password/change', { newPassword });
+        return data
     }
     catch (e) {
         throw new Error(e.response.data.message)

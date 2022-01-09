@@ -12,23 +12,23 @@ const UpdatePasswordForm = observer(({openForm}) => {
 
     const {userStore} = useAuth();
     const history = useHistory();
-    const {register, handleSubmit, formState: { errors }, setValue, getValues} = useForm();
+    const {register, handleSubmit, formState: { errors }, setValue} = useForm();
 
-    const changeOldPassword = async ({oldPassword, newPassword}) => {
+    const changeOldPassword = async ({ newPassword }) => {
         try {
-            await changePassword(userStore.firebaseUser.uid, oldPassword, newPassword)
-            openForm(false)
+            await changePassword(userStore.firebaseUser.uid, newPassword)
             history.push(LOGIN_ROUTE)
+            userStore.setDbUser({});
+            userStore.setFirebaseUser({});
+            userStore.setIsAuth(false);
+            localStorage.removeItem('token')
         }
         catch (e) {
             console.log(e)
         }
     }
 
-    const notEqual = () => !getValues(['oldPassword', 'newPassword']).every( (val, i, arr) => val === arr[0] )
-
     const close = () => {
-        setValue('oldPassword', '');
         setValue('newPassword', '');
         openForm(false)
     }
@@ -38,21 +38,12 @@ const UpdatePasswordForm = observer(({openForm}) => {
             <Dialog.Title as="p" className="mb-4 font-semibold text-lg">Изменить пароль</Dialog.Title>
             <div className="flex flex-col space-y-3">
                 <form className="flex flex-col space-y-3" onSubmit={handleSubmit(changeOldPassword)}>
-                    <div className="flex flex-col w-full">
-                        <label>Старый пароль</label>
-                        <input className="px-3 py-2 border rounded-md focus:outline-none focus:border-pink"
-                               {...register('oldPassword',
-                                   {
-                                       required: "Поле старый пароль не заполнено",
-                                   })}/>
-                    </div>
 
                     <div className="flex flex-col w-full">
                         <label>Новый пароль</label>
                         <input className="px-3 py-2 border rounded-md focus:outline-none focus:border-pink"
                                {...register('newPassword', {
                                    required: "Поле новый пароль не заполнено",
-                                   validate: notEqual
                                })}/>
                     </div>
 

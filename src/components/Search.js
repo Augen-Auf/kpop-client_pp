@@ -1,11 +1,11 @@
-import React, {useState} from 'react';
+import React, {Fragment, useState} from 'react';
 import CardsList from "./CardsList";
 import {useForm} from "react-hook-form";
 import {EMAIL_REGEX} from "../utils/consts";
 
 import {searchNews} from "../http/NewsAPI";
 
-const Search = ({modalLabel}) => {
+const Search = ({close}) => {
     const {register, handleSubmit} = useForm();
     const [searchedNews, setSearchedNews]  = useState([])
     const [isEmpty, setIsEmpty] = useState(false)
@@ -19,8 +19,7 @@ const Search = ({modalLabel}) => {
     }
 
     return (
-        <div className="modal items-center">
-            <div className="modal-box rounded-box max-w-full xl:w-3/4 w-4/5 h-4/5 flex flex-col">
+            <Fragment>
                 <h1 className="py-5 text-4xl text-center">Поиск</h1>
                 <form action="" onSubmit={handleSubmit(sendQuery)}>
                     <div className="form-control">
@@ -34,14 +33,13 @@ const Search = ({modalLabel}) => {
                     </div>
                 </form>
                 <div className="flex-grow my-3 w-full">
-                    { !isEmpty && <CardsList items={ searchedNews }/> }
+                    { !isEmpty && <CardsList items={ searchedNews } closeModal={close}/> }
                     { isEmpty && <p className="text-center text-2xl py-4">Ничего не найдено</p> }
                 </div>
                 <div className="modal-action bottom-0">
-                    <label htmlFor={modalLabel} className="btn">Закрыть</label>
+                    <label onClick={close} className="btn">Закрыть</label>
                 </div>
-            </div>
-        </div>
+            </Fragment>
     );
 };
 

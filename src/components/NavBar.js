@@ -1,6 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import { useAuth } from "../contexts/FirebaseAuthContext";
 import { Fragment } from 'react'
+import Modal from 'react-modal';
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
 import {
@@ -25,6 +26,8 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
+Modal.setAppElement('#root');
+
 const NavBar = observer(() => {
 
     const { userStore, signOut } = useAuth();
@@ -32,6 +35,29 @@ const NavBar = observer(() => {
     const [avatar,setAvatar] = useState(null)
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const routesList = [ ...publicRoutes, ...authRoutes ]
+    const [modalIsOpen, setIsOpen] = useState(false);
+
+    function openModal() {
+        setIsOpen(true);
+    }
+
+    function afterOpenModal() {
+    }
+
+    function closeModal() {
+        setIsOpen(false);
+    }
+
+    const customStyles = {
+        content: {
+            top: '50%',
+            left: '50%',
+            right: 'auto',
+            bottom: 'auto',
+            marginRight: '-50%',
+            transform: 'translate(-50%, -50%)',
+        },
+    };
 
     const navigation = [
         {title:'НОВОСТИ', link:NEWS_ROUTE},
@@ -101,13 +127,23 @@ const NavBar = observer(() => {
                         </div>
                         <div className="w-3/12 flex md:justify-around justify-between md:ml-10">
                             <Fragment>
-                                <label htmlFor="my-modal-3" className="modal-button rounded-full bg-pink cursor-pointer text-black bg-blue-dark ">
+                                <button
+                                    className="btn btn-primary btn-square rounded-full bg-pink cursor-pointer text-black"
+                                    onClick={openModal}>
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 px-2 py-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                     </svg>
-                                </label>
+                                </button>
                                 <input type="checkbox" id="my-modal-3" className="modal-toggle"/>
-                                <Search modalLabel="my-modal-3"/>
+                                <Modal
+                                    isOpen={modalIsOpen}
+                                    onAfterOpen={afterOpenModal}
+                                    onRequestClose={closeModal}
+                                    className="mx-auto modal-box rounded-box max-w-full xl:w-3/4 w-4/5 h-4/5 flex flex-col"
+                                    contentLabel="Example Modal"
+                                >
+                                    <Search close={closeModal}/>
+                                </Modal>
                             </Fragment>
                             <div className="flex items-center">
                                 {/* Profile dropdown */}

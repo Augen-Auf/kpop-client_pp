@@ -17,17 +17,17 @@ const Auth = observer(() => {
     const location = useLocation();
     const history = useHistory();
     const isLogin = location.pathname === LOGIN_ROUTE;
-    const {register, handleSubmit, formState: { errors }} = useForm();
+    const {register, handleSubmit, formState: { errors }, setValue, clearErrors} = useForm();
     const { signUpWithGoogle, signIn, signUp } = useAuth()
 
 
-    const onSubmit = async (data, typeAuth=null) => {
+    const onSubmit = async (data) => {
         setAuthError(null)
 
         try {
             console.log('start',authError)
-            if(typeAuth) {
-                switch (typeAuth)
+            if(data.typeAuth) {
+                switch (data.typeAuth)
                 {
                     case 'google':
                         await signUpWithGoogle()
@@ -100,7 +100,11 @@ const Auth = observer(() => {
                             <button
                                 type="button"
                                 className="btn btn-secondary w-full space-x-2"
-                                onClick={() => onSubmit(null, 'google')}>
+                                onClick={async () => {
+                                    setValue('typeAuth', 'google')
+                                    await clearErrors()
+                                    await onSubmit({typeAuth: 'google'})
+                                }}>
                                 <div className="inline-block">
                                     <svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google"
                                          className="svg-inline--fa fa-google fa-w-16 text-pink h-10 w-90" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">

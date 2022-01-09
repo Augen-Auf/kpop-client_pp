@@ -30,9 +30,6 @@ const Tests = () => {
                     }).map( test => {
                         return (
                             <div className="card card-bordered bg-secondary shadow-lg">
-                                <figure>
-                                    <img src="https://picsum.photos/id/1005/400/250"/>
-                                </figure>
                                 <div className="card-body flex-grow">
                                     <h2 className="card-title">{ test.name }
                                         {

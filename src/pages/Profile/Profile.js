@@ -167,9 +167,12 @@ const Profile = observer(() => {
                                                 <button className="bg-pink text-lg rounded-md py-2 focus:outline-none" onClick={() => openDialog('updateProfile')}>
                                                     Редактировать
                                                 </button>
-                                                <button className="bg-pink text-lg rounded-md py-2 focus:outline-none" onClick={() => openDialog('updatePassword')}>
-                                                    Сменить пароль
-                                                </button>
+                                                {
+                                                    userStore.isAuth && userStore.firebaseUser.providerData[0].providerId === 'password' &&
+                                                    <button className="bg-pink text-lg rounded-md py-2 focus:outline-none" onClick={() => openDialog('updatePassword')}>
+                                                        Сменить пароль
+                                                    </button>
+                                                }
                                             </Fragment>
                                     }
                                 </div>

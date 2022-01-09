@@ -1,23 +1,31 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {Dialog} from "@headlessui/react";
-import {EMAIL_REGEX} from "../../utils/consts";
+import {EMAIL_REGEX, LOGIN_ROUTE} from "../../utils/consts";
 import {useForm} from "react-hook-form";
 import { useAuth } from "../../contexts/FirebaseAuthContext";
 import {observer} from "mobx-react-lite";
 import {getAvatar, updateUser} from "../../http/userAPI";
+import defaultAvatar from "../../style/img/devault_avatar.jpg";
+import {useHistory} from "react-router-dom";
 
 const UpdateProfileForm = observer(({openForm}) => {
 
-    const {userStore} = useAuth();
-    const [avatar, setAvatar] = useState(userStore.dbUser.photoUrl)
-    const [avatarAction, setAvatarAction] = useState(null)
+    const {userStore, signOut} = useAuth();
+    const history = useHistory()
 
+    const [avatar, setAvatar] = useState(userStore.dbUser.avatarId)
+    const [avatarAction, setAvatarAction] = useState(null)
     const {register, handleSubmit, formState: { errors }, setValue} = useForm({
         defaultValues: {
             name: userStore.dbUser.nickname,
-            email: userStore.firebaseUser.email
+            email: userStore.firebaseUser.providerData[0].providerId === 'password' ? userStore.firebaseUser.email : null
         }
     });
+
+    useEffect(() => {
+        setAvatar(userStore.isAuth && userStore.dbUser.avatarId ?
+            process.env.REACT_APP_API_URL + 'api/avatar/' + userStore.dbUser.avatarId : null)
+    }, [])
 
     const removeAvatar = () => {
         setAvatar(null)
@@ -31,9 +39,22 @@ const UpdateProfileForm = observer(({openForm}) => {
     }
 
     const changeUserData = async ({name, email, avatarImage}) => {
-        const userData = await updateUser(userStore.dbUser.id, name, email, avatarImage, avatarAction)
-        userStore.setDbUser(userData);
-        openForm(false)
+        console.log({name, email, avatarImage})
+        const userData = await updateUser(userStore.firebaseUser.uid, name, email, avatarImage, avatarAction)
+        if(email) {
+            await signOut()
+            history.push(LOGIN_ROUTE)
+            userStore.setDbUser({});
+            userStore.setFirebaseUser({});
+            userStore.setIsAuth(false);
+            localStorage.removeItem('token')
+
+        }
+        else {
+            userStore.setDbUser(userData);
+            openForm(false)
+        }
+
     }
 
     const close = () => {
@@ -50,7 +71,7 @@ const UpdateProfileForm = observer(({openForm}) => {
                 <form className="flex flex-col space-y-3" onSubmit={handleSubmit(changeUserData)}>
                     <div>
                         <div className="mx-auto bg-gray-400 aspect-w-16 aspect-h-8 w-1/2 rounded-md">
-                            { avatar ? <img src={avatar} alt="" className="rounded-md object-cover"/> : null }
+                            <img src={avatar ?? defaultAvatar} alt="" className="rounded-md object-cover"/>
                         </div>
                     </div>
                     <div className="flex flex-col w-full space-y-2">
@@ -74,15 +95,17 @@ const UpdateProfileForm = observer(({openForm}) => {
                                {...register('name', {required: "Поле имя не заполнено"})}/>
                     </div>
 
-                    <div className="flex flex-col w-full">
-                        <label>Почта</label>
-                        <input className="px-3 py-2 border rounded-md focus:outline-none focus:border-pink"
+                    {
+                        userStore.isAuth && userStore.firebaseUser.providerData[0].providerId === 'password' &&
+                        <div className="flex flex-col w-full">
+                            <label>Почта</label>
+                            <input className="px-3 py-2 border rounded-md focus:outline-none focus:border-pink"
                                {...register('email', {
-                                required: "Поле email не заполнено",
-                                pattern: {value: EMAIL_REGEX, message:"В поле введен не email"}
-                        })}/>
-                    </div>
-
+                                   required: "Поле email не заполнено",
+                                   pattern: {value: EMAIL_REGEX, message: "В поле введен не email"}
+                               })}/>
+                        </div>
+                    }
                     <div className="flex space-x-5">
                         <button className="px-3 py-2 bg-pink rounded-md focus:outline-none" type="button" onClick={() => close()}>Закрыть</button>
                         <button className="px-3 py-2 bg-pink rounded-md focus:outline-none" type="submit">Изменить</button>

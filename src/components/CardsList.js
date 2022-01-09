@@ -3,7 +3,7 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import { NEWS_ROUTE } from "../utils/consts";
 import {useHistory} from "react-router-dom";
 
-function CardsList({items=[]}) {
+function CardsList({items=[], closeModal}) {
     const history = useHistory()
     return (
         <>
@@ -22,7 +22,12 @@ function CardsList({items=[]}) {
                                 <h2 className="card-title lg:text-3xl">{item.title}</h2>
                                 <p className="text-md flex-grow">{item.lid}</p>
                                 <div className="card-actions">
-                                    <button className="btn btn-primary" onClick={() => history.push(NEWS_ROUTE + '/' + item.id)}>Читать</button>
+                                    <button className="btn btn-primary" onClick={() => {
+                                        history.push(NEWS_ROUTE + '/' + item.id)
+                                        closeModal()
+                                    }}>
+                                        Читать
+                                    </button>
                                 </div>
                             </div>
                         </div>
