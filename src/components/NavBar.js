@@ -17,7 +17,7 @@ import {
 } from "../utils/consts";
 
 import {observer} from "mobx-react-lite";
-import {Link, useLocation} from "react-router-dom";
+import {Link, useHistory, useLocation} from "react-router-dom";
 import {publicRoutes, authRoutes} from "../routes";
 import Search from "./Search";
 import defaultAvatar from "../style/img/devault_avatar.jpg"
@@ -32,6 +32,7 @@ const NavBar = observer(() => {
 
     const { userStore, signOut } = useAuth();
     const location = useLocation();
+    const history = useHistory()
     const [avatar,setAvatar] = useState(null)
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const routesList = [ ...publicRoutes, ...authRoutes ]
@@ -71,12 +72,13 @@ const NavBar = observer(() => {
     const unauth_profile = [{title:'Войти', link: LOGIN_ROUTE}, {title:'Зарегистрироваться', link: REGISTRATION_ROUTE}];
     const currentSectionTitle = routesList.find( item => location.pathname === item.path)?.name
 
-    const logOut = () => {
-        signOut()
+    const logOut = async () => {
+        await signOut()
         userStore.setDbUser({});
         userStore.setFirebaseUser({});
         userStore.setIsAuth(false);
         localStorage.removeItem('token')
+        history.push(LOGIN_ROUTE)
     };
 
     const profile = [

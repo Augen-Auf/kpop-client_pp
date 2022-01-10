@@ -59,7 +59,7 @@ const UserNews = ({ userId}) => {
                                                 <img src={item.imageLink} className="object-cover rounded-md w-full h-full" alt=""/>
                                                 }
                                             </div>
-                                            <span className="font-semibold text-lg truncate mr-3">{ item.title }</span>
+                                            <span className="font-semibold text-lg mr-3">{ item.title.length > 30 ? item.title.slice(0,30) +  '...' : item.title}</span>
                                         </div>
                                         {
                                             !location.pathname.includes('/author') &&

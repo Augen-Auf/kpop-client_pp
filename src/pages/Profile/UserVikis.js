@@ -32,7 +32,7 @@ const UserVikis = ({userId}) => {
     }, [])
 
     return (
-        <div className="p-5 flex flex-col">
+        <div className="p-5 flex flex-col space-y-3">
             <div className="flex justify-between items-center">
                 <span className="text-xl">Мои вики</span>
                 {
@@ -44,39 +44,48 @@ const UserVikis = ({userId}) => {
                     </button>
                 }
             </div>
-            { userVikis && userVikis.length > 0 ? userVikis.map( item =>
-                <div className="mt-3 2xl:w-5/6 2xl:mx-auto w-full bg-pink flex sm:flex-row sm:justify-between flex-col rounded-md lg:items-center">
-                    <div className="flex lg:py-0 py-3 lg:w-3/4">
-                        <img src={item.imageLink ? item.imageLink : "img/Rose.jpg"} className="object-cover lg:h-24 lg:w-24 w-40 h-40 rounded-md mx-2 my-2" alt=""/>
-                        <div className="flex flex-grow lg:flex-row flex-col lg:items-center justify-center">
-                            <p className="mx-8 font-medium w-3/4 lg:text-lg hover:text-yellow cursor-pointer"
-                               onClick={() => { history.push('/vikis/'+item.id) }}>
-                                { item.name }
-                            </p>
-                            <p className="mx-8 w-1/4 lg:text-md text-sm">Добавлено: { moment(item.createdAt).format('DD.MM.YYYY') }</p>
-                        </div>
+            {
+                userVikis && userVikis.length > 0 ?
+                    <div className="grid xl:grid-cols-2 grid-cols-1 gap-4">
+                        {
+                            userVikis.map( item =>
+                                <div className="card-body p-4 bg-primary rounded">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <div className="flex space-x-3 items-center">
+                                            <div className="w-14 h-14 rounded bg-pink">
+                                                {item.imageLink &&
+                                                <img src={item.imageLink} className="object-cover rounded-md w-full h-full" alt=""/>
+                                                }
+                                            </div>
+                                            <span className="font-semibold text-lg mr-3">{ item.name }</span>
+                                        </div>
+                                        {
+                                            !location.pathname.includes('/author') &&
+                                            <div className="flex space-x-2">
+                                                <button className="btn btn-square btn-neural" onClick={() => {history.push('/update/vikis/'+item.id)}}>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                    </svg>
+                                                </button>
+                                                <button className="btn btn-square btn-neural" onClick={() => removeViki(item.id)}>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        }
+                                    </div>
+                                    <p className="text-sm">{ moment(item.createdAt).format('DD.MM.YYYY') }</p>
+                                    <div className="truncate">{item.short_description}</div>
+                                    <div className="card-actions">
+                                        <button className="btn btn-neutral" onClick={() => history.push('/news/' + item.id)}>Подробнее</button>
+                                    </div>
+                                </div>
+                            )
+                        }
                     </div>
-                    {
-                        !location.pathname.includes('/author') &&
-                        <div className="flex lg:flex-row sm:flex-col lg:w-1/4 lg:justify-end lg:py-0 py-4 mx-3 lg:space-x-4 lg:space-y-0 sm:space-y-4 sm:space-x-0 space-y-0 space-x-4 sm:justify-start justify-center my-auto">
-                            <button className="bg-white p-3 rounded-md hover:bg-yellow focus:outline-none" onClick={() => {history.push('/update/vikis/' + item.id)}}>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none"
-                                     viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                                </svg>
-                            </button>
-                            <button className="bg-white p-3 rounded-md hover:bg-yellow focus:outline-none" onClick={() => removeViki(item.id)}>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none"
-                                     viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                </svg>
-                            </button>
-                        </div>
-                    }
-                </div>
-            ) : <span>0 Вики</span>
+                    :
+                    <span>0 Новостей</span>
             }
         </div>
     );

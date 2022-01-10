@@ -55,24 +55,10 @@ const Profile = observer(() => {
         return await getUserSubscriptions(uid)
     }
 
-    useEffect(() => {
-        let avatarId = userStore.isAuth ? userStore.dbUser.avatarId : authorInfo.avatarId
-        setAvatar(avatarId ? process.env.REACT_APP_API_URL + 'api/avatar/' + avatarId : defaultAvatar)
-    }, [userStore.isAuth, authorInfo])
-
-    useEffect(async () => {
-        if(userStore.dbUser.id && id) {
-            const userSubscription = await isUserSubscribed(id, userStore.dbUser.id)
-            console.log(userSubscription)
-            if (userSubscription) {
-                setUserSubscribed(true)
-            }
-        }
-    },  [userStore.dbUser, id])
-
     useEffect(async () => {
         if(id) {
             const author = await getUserInfo(id)
+            console.log('user', author)
             setAuthorInfo(author)
         }
 
@@ -94,6 +80,28 @@ const Profile = observer(() => {
             setUserSubs(r)
         })
     }, [])
+
+    useEffect(() => {
+        console.log('id',id)
+        let avatarlink = null
+        if(authorInfo && id) {
+            avatarlink = authorInfo.avatarId ? process.env.REACT_APP_API_URL + 'api/avatar/' + authorInfo.avatarId : defaultAvatar
+        }
+        else if(userStore.isAuth) {
+            avatarlink = userStore.dbUser.avatarId ? process.env.REACT_APP_API_URL + 'api/avatar/' +  userStore.dbUser.avatarId : defaultAvatar
+        }
+        setAvatar(avatarlink)
+    }, [userStore.isAuth, authorInfo])
+
+    useEffect(async () => {
+        if(userStore.dbUser.id && id) {
+            const userSubscription = await isUserSubscribed(id, userStore.dbUser.id)
+            console.log(userSubscription)
+            if (userSubscription) {
+                setUserSubscribed(true)
+            }
+        }
+    },  [userStore.dbUser, id])
 
     const sections = [
         {title: 'Новости', section: 'news', component: <UserNews userId={id || userStore.dbUser.id} />},
@@ -211,7 +219,7 @@ const Profile = observer(() => {
                                                             <div className="w-8 h-8 p-px bg-opacity-10 mask mask-circle bg-base-content">
                                                                 {
                                                                     sub.author.avatarId ?
-                                                                        <img src="" className="mask mask-circle"/>
+                                                                        <img src={process.env.REACT_APP_API_URL + 'api/avatar/' + sub.author.avatarId} className="mask mask-circle"/>
                                                                         :
                                                                         <div className="w-full h-full bg-secondary mask mask-circle"/>
                                                                 }
